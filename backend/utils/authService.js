@@ -53,12 +53,58 @@ class AuthService {
       link: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/verify?token=${token}`
     }
   }
-
-  // .edu Email Validation
-  validateEduEmail(email) {
-    const eduRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.edu$/
+  // College Email Validation (Indian + International)
+  validateCollegeEmail(email) {
+    // Supported college domains
+    const allowedDomains = [
+      // Indian Engineering Colleges
+      "vnrvjiet.ac.in",
+      "cbit.ac.in", 
+      "mgit.ac.in",
+      "mgit.com",
+      "vce.ac.in",
+      "kmit.in",
+      "vit.ac.in",
+      "iiit.ac.in",
+      "students.iiit.ac.in",
+      "iith.ac.in",
+      "nitw.ac.in",
+      "cvr.ac.in",
+      "bvrit.ac.in",
+      "ellenkicet.ac.in",
+      "villamariecollege.ac.in"
+    ]
     
-    if (!eduRegex.test(email)) {
+    // General patterns for college emails
+    const collegePatterns = [
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.edu$/,           // International .edu
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.edu\.in$/,       // Indian .edu.in
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.ac\.in$/,        // Indian .ac.in
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.edu\.au$/,       // Australian .edu.au
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.ac\.uk$/,        // UK .ac.uk
+    ]
+      if (!email || !email.includes('@')) {
+      return { isValid: false, reason: 'Invalid email format' }
+    }
+    
+    const emailDomain = email.split('@')[1]?.toLowerCase()
+    
+    // Check against allowed specific domains
+    if (allowedDomains.includes(emailDomain)) {
+      return { isValid: true, domain: emailDomain, type: 'allowed_domain' }
+    }
+    
+    // Check against general patterns
+    const matchesPattern = collegePatterns.some(pattern => pattern.test(email))
+    if (!matchesPattern) {
+      return { 
+        isValid: false, 
+        reason: 'Please use your college email address (.edu, .ac.in, .edu.in domains)' 
+      }
+    }
+
+    // Extract college domain
+    const collegeDomain = email.split('@')[1]
       return {
         isValid: false,
         error: 'Only .edu email addresses are allowed'

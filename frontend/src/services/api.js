@@ -70,6 +70,21 @@ class ApiService {
     })
   }
 
+  // OTP Authentication (fallback)
+  async sendOTP(email) {
+    return this.apiCall('/auth/send-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    })
+  }
+
+  async verifyOTP(email, otp) {
+    return this.apiCall('/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email, otp }),
+    })
+  }
+
   async refreshToken() {
     return this.apiCall('/auth/refresh-token', {
       method: 'POST',

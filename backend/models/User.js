@@ -167,9 +167,16 @@ const userSchema = new mongoose.Schema({
   },
 
   lockoutUntil: Date,
-
   magicLinkToken: String,
   magicLinkExpires: Date,
+  
+  // OTP Authentication (fallback)
+  otp: String,
+  otpExpires: Date,
+  otpAttempts: {
+    type: Number,
+    default: 0
+  },
 
   // Social Links (Optional)
   socialLinks: {
@@ -298,6 +305,9 @@ userSchema.methods.toCleanJSON = function() {
   const user = this.toObject()
   delete user.magicLinkToken
   delete user.magicLinkExpires
+  delete user.otp
+  delete user.otpExpires
+  delete user.otpAttempts
   delete user.loginAttempts
   delete user.lockoutUntil
   return user

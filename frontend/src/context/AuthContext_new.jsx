@@ -9,6 +9,7 @@ const AUTH_STATES = {
   CHECKING: 'checking',
   GUEST: 'guest',
   MAGIC_LINK_SENT: 'magic_link_sent',
+  OTP_SENT: 'otp_sent',
   AUTHENTICATED: 'authenticated',
   ERROR: 'error'
 }
@@ -19,6 +20,7 @@ const AUTH_ACTIONS = {
   SET_USER: 'SET_USER',
   SET_GUEST: 'SET_GUEST',
   SET_MAGIC_LINK_SENT: 'SET_MAGIC_LINK_SENT',
+  SET_OTP_SENT: 'SET_OTP_SENT',
   SET_ERROR: 'SET_ERROR',
   CLEAR_ERROR: 'CLEAR_ERROR',
   LOGOUT: 'LOGOUT'
@@ -30,7 +32,9 @@ const initialState = {
   user: null,
   error: null,
   loading: false,
-  magicLinkEmail: null
+  magicLinkEmail: null,
+  otpEmail: null,
+  authMethod: null
 }
 
 // Auth reducer

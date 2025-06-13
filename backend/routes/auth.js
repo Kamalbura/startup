@@ -2,7 +2,7 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 import { body, validationResult } from 'express-validator';
 import User from '../models/User.js';
-import authService from '../utils/authService.js';
+import authService from '../utils/authService_new.js';
 import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -34,10 +34,10 @@ const magicLinkLimiter = rateLimit({
 const validateEduEmail = [
   body('email')
     .isEmail()
-    .withMessage('Please provide a valid email address')
-    .custom((email) => {
-      if (!authService.validateEduEmail(email)) {
-        throw new Error('Please use a valid .edu email address from your institution');
+    .withMessage('Please provide a valid email address')    .custom((email) => {
+      const validation = authService.validateCollegeEmail(email);
+      if (!validation.isValid) {
+        throw new Error(validation.reason || 'Please use a valid college email address (.edu, .ac.in, .edu.in domains)');
       }
       return true;
     })
@@ -354,5 +354,184 @@ router.get('/verify-token', authenticateToken, (req, res) => {
     }
   });
 });
+
+/**
+ * @route   POST /api/v1/auth/send-otp
+ * @desc    Send OTP for email verification (fallback authentication)
+ * @access  Public
+ */
+router.post('/send-otp',
+  authLimiter,
+  magicLinkLimiter, // Reuse the same rate limiter for OTP
+  validateEduEmail,
+  async (req, res) => {
+    try {
+      // Validate request
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+      }
+
+      const { email } = req.body;
+      
+      // Check if user exists, if not create a new one
+      let user = await User.findOne({ email });
+      const emailValidation = authService.validateCollegeEmail(email);
+      const institution = emailValidation.institution;
+
+      if (!user) {
+        // Create new user
+        user = new User({
+          email,
+          college: {
+            name: institution,
+            domain: emailValidation.domain
+          },
+          // Set temporary values - user will complete profile after OTP verification
+          name: 'New User',
+          year: '1st Year',
+          course: 'Pending'
+        });
+        await user.save();
+      }
+
+      // Generate OTP (6-digit number)
+      const otp = authService.generateOTP();
+      const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+      // Save OTP to user
+      user.otp = otp;
+      user.otpExpires = otpExpires;
+      user.otpAttempts = 0;
+      user.lastMagicLinkRequest = new Date(); // Track for rate limiting
+      await user.save();
+
+      // Send OTP via email
+      await authService.sendOTP(email, otp, institution);
+
+      res.status(200).json({
+        success: true,
+        message: 'OTP sent successfully! Check your email.',
+        data: {
+          email,
+          institution,
+          expiresIn: '5 minutes',
+          authMethod: 'OTP'
+        }
+      });
+
+    } catch (error) {
+      console.error('Send OTP error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to send OTP. Please try again.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
+);
+
+/**
+ * @route   POST /api/v1/auth/verify-otp
+ * @desc    Verify OTP and authenticate user
+ * @access  Public
+ */
+router.post('/verify-otp',
+  authLimiter,
+  [
+    body('email')
+      .isEmail()
+      .withMessage('Please provide a valid email address')
+      .normalizeEmail({ gmail_remove_dots: false }),
+    body('otp')
+      .isLength({ min: 6, max: 6 })
+      .isNumeric()
+      .withMessage('OTP must be a 6-digit number')
+  ],
+  async (req, res) => {
+    try {
+      // Validate request
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+      }
+
+      const { email, otp } = req.body;
+
+      // Find user
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found. Please request a new OTP.'
+        });
+      }
+
+      // Check OTP attempts
+      if (user.otpAttempts >= 3) {
+        return res.status(429).json({
+          success: false,
+          message: 'Too many OTP attempts. Please request a new OTP.'
+        });
+      }
+
+      // Verify OTP
+      const otpVerification = authService.verifyOTP(otp, user.otp, user.otpExpires);
+      
+      if (!otpVerification.isValid) {
+        // Increment attempts
+        user.otpAttempts += 1;
+        await user.save();
+
+        return res.status(400).json({
+          success: false,
+          message: otpVerification.error,
+          attemptsRemaining: 3 - user.otpAttempts
+        });
+      }
+
+      // OTP is valid - clear OTP fields and authenticate user
+      user.otp = undefined;
+      user.otpExpires = undefined;
+      user.otpAttempts = 0;
+      user.isVerified = true;
+      user.lastLogin = new Date();
+      await user.save();
+
+      // Generate JWT token
+      const token = authService.generateToken({
+        id: user._id,
+        email: user.email,
+        college: user.college.name
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'OTP verified successfully! Welcome to CampusKarma.',
+        data: {
+          token,
+          user: user.toCleanJSON(),
+          authMethod: 'OTP'
+        }
+      });
+
+    } catch (error) {
+      console.error('Verify OTP error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to verify OTP. Please try again.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
+);
 
 export default router;

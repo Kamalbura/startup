@@ -7,6 +7,8 @@ import './index.css'
 
 // Components
 import LoginPage from './pages/LoginPage'
+import VerificationPage from './pages/VerificationPage'
+import LoginPageOTP from './pages/LoginPageOTP'
 import Dashboard from './components/Dashboard'
 import CSSTest from './components/CSSTest'
 
@@ -47,11 +49,20 @@ function AppContent() {
         path="/test" 
         element={<CSSTest />} 
       />
-      
-      {/* Public Routes */}
+        {/* Public Routes */}      
       <Route 
         path="/login" 
         element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage />} 
+      />
+      
+      <Route 
+        path="/verification" 
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <VerificationPage />} 
+      />
+      
+      <Route 
+        path="/login-otp" 
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPageOTP />} 
       />
       
       {/* Protected Routes */}
@@ -59,17 +70,16 @@ function AppContent() {
         path="/dashboard" 
         element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
       />
-      
-      {/* Default Route */}
+        {/* Default Route */}
       <Route 
         path="/" 
-        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} 
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/verification" />} 
       />
       
       {/* Catch all - redirect to appropriate page */}
       <Route 
         path="*" 
-        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} 
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/verification" />} 
       />
     </Routes>
   )

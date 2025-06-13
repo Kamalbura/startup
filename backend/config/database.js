@@ -33,15 +33,13 @@ class DatabaseConnection {
     }
 
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/campuskarma'
-    
-    const options = {
+      const options = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       maxPoolSize: 10, // Maintain up to 10 socket connections
       serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
       socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-      bufferCommands: false, // Disable mongoose buffering
-      bufferMaxEntries: 0 // Disable mongoose buffering
+      // Removed deprecated options: bufferCommands and bufferMaxEntries
     }
 
     try {
@@ -66,17 +64,17 @@ class DatabaseConnection {
       mongoose.connection.on('reconnected', () => {
         logger.info('Database reconnected')
         this.isConnected = true
-      })
-
-    } catch (error) {
+      })    } catch (error) {
       this.connectionAttempts++
-      logger.error(`Database connection failed (attempt ${this.connectionAttempts}):`, error.message)
+      logger.error(`Database connection failed (attempt ${this.connectionAttempts}):`, error)
       
       if (this.connectionAttempts < this.maxRetries) {
         logger.info(`Retrying connection in 5 seconds...`)
-        setTimeout(() => this.connect(), 5000)      } else {
+        setTimeout(() => this.connect(), 5000)
+      } else {
         logger.error('❌ Maximum database connection attempts reached. Server will continue without database.')
         logger.info('💡 To fix: Ensure MongoDB is running or update MONGODB_URI in .env')
+        logger.info(`📝 Current MONGODB_URI: ${mongoUri}`)
         // Don't throw error, let server continue for development
       }
     }

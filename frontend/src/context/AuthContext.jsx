@@ -121,15 +121,41 @@ export function AuthProvider({ children }) {
       dispatch({ type: AUTH_ACTIONS.SET_GUEST })
     }
   }
-
   // Send magic link
   const sendMagicLink = async (email) => {
     try {
       dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true })
       
-      // Validate .edu email
-      if (!email.endsWith('.edu')) {
-        throw new Error('Please use your college .edu email address')
+      // Validate college email domains
+      const allowedDomains = [
+        "vnrvjiet.ac.in",
+        "cbit.ac.in", 
+        "mgit.ac.in",
+        "mgit.com",
+        "vce.ac.in",
+        "kmit.in",
+        "vit.ac.in",
+        "iiit.ac.in",
+        "students.iiit.ac.in",
+        "iith.ac.in",
+        "nitw.ac.in",
+        "cvr.ac.in",
+        "bvrit.ac.in",
+        "ellenkicet.ac.in",
+        "villamariecollege.ac.in",
+        // Add common Indian college domains
+        "edu", // International .edu
+        "edu.in", // Indian .edu.in
+        "ac.in", // Indian academic domains
+      ]
+      
+      const emailDomain = email.split('@')[1]
+      const isValidDomain = allowedDomains.some(domain => 
+        emailDomain === domain || emailDomain.endsWith('.' + domain)
+      )
+      
+      if (!isValidDomain) {
+        throw new Error('Please use your college email address from a supported institution')
       }
 
       await apiService.sendMagicLink(email)
