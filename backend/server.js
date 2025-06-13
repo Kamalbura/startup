@@ -15,6 +15,12 @@ import dotenv from 'dotenv'
 import db from './config/database.js'
 import authService from './utils/authService.js'
 
+// Import routes
+import authRoutes from './routes/auth.js'
+import userRoutes from './routes/users.js'
+import taskRoutes from './routes/tasks.js'
+import skillRoutes from './routes/skills.js'
+
 // Import middleware
 import { authErrorHandler } from './middleware/auth.js'
 
@@ -149,17 +155,13 @@ class CampusKarmaServer {
           auth: `${apiPrefix}/auth`,
           users: `${apiPrefix}/users`,
           tasks: `${apiPrefix}/tasks`,
-          skills: `${apiPrefix}/skills`
-        }
+          skills: `${apiPrefix}/skills`        }
       })
     })    // API Routes
-    const authRoutes = require('./routes/auth')
     this.app.use(`${apiPrefix}/auth`, authRoutes)
-    
-    // Additional routes (to be implemented)
-    // this.app.use(`${apiPrefix}/users`, userRoutes)
-    // this.app.use(`${apiPrefix}/tasks`, taskRoutes)
-    // this.app.use(`${apiPrefix}/skills`, skillRoutes)
+    this.app.use(`${apiPrefix}/users`, userRoutes)
+    this.app.use(`${apiPrefix}/tasks`, taskRoutes)
+    this.app.use(`${apiPrefix}/skills`, skillRoutes)
 
     // Temporary route for testing
     this.app.get(`${apiPrefix}/test`, (req, res) => {

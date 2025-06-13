@@ -153,7 +153,6 @@ const skillSchema = new mongoose.Schema({
 })
 
 // Indexes for performance
-skillSchema.index({ name: 1 }, { unique: true })
 skillSchema.index({ category: 1 })
 skillSchema.index({ demandLevel: -1 })
 skillSchema.index({ totalUsers: -1 })

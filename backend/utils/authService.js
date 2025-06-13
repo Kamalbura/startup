@@ -91,6 +91,61 @@ class AuthService {
       .join(' ')
   }
 
+  // Extract institution/college from .edu email
+  extractInstitution(email) {
+    if (!email || !email.includes('@')) {
+      return 'Unknown Institution'
+    }
+    
+    const domain = email.split('@')[1]
+    if (!domain || !domain.endsWith('.edu')) {
+      return 'Unknown Institution'
+    }
+    
+    return this.extractCollegeName(domain)
+  }
+
+  // Generate magic link token
+  generateMagicLinkToken(userId, email) {
+    const payload = {
+      userId,
+      email,
+      type: 'magic_link'
+    }
+    return jwt.sign(payload, this.jwtSecret, {
+      expiresIn: this.magicLinkExpiration,
+      issuer: 'campuskarma',
+      audience: 'campuskarma-magic-link'
+    })
+  }
+
+  // Verify magic link token
+  verifyMagicLinkToken(token) {
+    try {
+      return jwt.verify(token, this.jwtSecret, {
+        issuer: 'campuskarma',
+        audience: 'campuskarma-magic-link'
+      })
+    } catch (error) {
+      logger.error('Magic link token verification failed:', error.message)
+      return null
+    }
+  }
+
+  // Generate access token for user authentication
+  generateAccessToken(userId, email) {
+    const payload = {
+      id: userId,
+      email,
+      type: 'access_token'
+    }
+    return jwt.sign(payload, this.jwtSecret, {
+      expiresIn: '24h',
+      issuer: 'campuskarma',
+      audience: 'campuskarma-users'
+    })
+  }
+
   // Email Service Initialization
   initializeEmailService() {
     if (process.env.NODE_ENV === 'development' || process.env.EMAIL_SERVICE === 'console') {
@@ -164,6 +219,96 @@ class AuthService {
             <h2>Welcome to the Student Skill Economy! 🚀</h2>
             
             <p>Hey there, future entrepreneur from <strong>${collegeName}</strong>!</p>
+            
+            <p>You're about to join India's most trusted student gig platform. Click the magic button below to complete your journey into the CampusKarma ecosystem:</p>
+            
+            <div style="text-align: center;">
+                <a href="${magicLink}" class="magic-button">🎯 Enter CampusKarma</a>
+            </div>
+            
+            <div class="trust-badge">
+                <h3>🛡️ Trust-First Platform</h3>
+                <p>✅ .edu Email Verified<br>
+                ✅ UPI Escrow Protection<br>
+                ✅ Peer Review System<br>
+                ✅ Anti-Fraud Security</p>
+            </div>
+            
+            <p><strong>What happens next?</strong></p>
+            <ul>
+                <li>🎨 Set up your profile & showcase skills</li>
+                <li>📚 Take skill quizzes to get verified</li>
+                <li>💼 Start earning or post your first task</li>
+                <li>⭐ Build your campus reputation</li>
+            </ul>
+            
+            <p><em>This link expires in 10 minutes for your security.</em></p>
+        </div>
+        
+        <div class="footer">
+            <p>Made with ❤️ for India's student community<br>
+            <a href="https://campuskarma.in">CampusKarma.in</a> | Trust • Skills • Opportunity</p>
+            
+            <p style="font-size: 12px; color: #9ca3af;">
+                If you didn't request this email, please ignore it.<br>
+                This link was requested for: ${email}
+            </p>
+        </div>
+    </body>
+    </html>
+    `
+  }
+
+  // Send magic link via email
+  async sendMagicLink(email, token, institution) {
+    const magicLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/verify?token=${token}`
+    
+    const mailOptions = {
+      to: email,
+      subject: '🎯 Your CampusKarma Magic Link',
+      html: this.generateMagicLinkTemplate(email, magicLink, institution)
+    }
+
+    try {
+      await this.emailTransporter.sendMail(mailOptions)
+      logger.info(`Magic link sent to ${email}`)
+      return true
+    } catch (error) {
+      logger.error('Failed to send magic link:', error)
+      return false
+    }
+  }
+
+  // Magic link template for email
+  generateMagicLinkTemplate(email, magicLink, institution) {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CampusKarma Magic Link</title>
+        <style>
+            body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { text-align: center; padding: 20px 0; border-bottom: 3px solid #0ea5e9; }
+            .logo { font-size: 28px; font-weight: bold; background: linear-gradient(135deg, #0ea5e9, #d946ef); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            .content { padding: 30px 0; }
+            .magic-button { display: inline-block; background: linear-gradient(135deg, #0ea5e9, #22c55e); color: white; padding: 15px 30px; text-decoration: none; border-radius: 12px; font-weight: 600; margin: 20px 0; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3); }
+            .magic-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4); }
+            .trust-badge { background: #f0f9ff; border: 2px solid #0ea5e9; border-radius: 8px; padding: 15px; margin: 20px 0; text-align: center; }
+            .footer { text-align: center; padding: 20px 0; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 14px; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="logo">CampusKarma</div>
+            <p>Turn Your Skills Into Karma ✨</p>
+        </div>
+        
+        <div class="content">
+            <h2>Welcome to the Student Skill Economy! 🚀</h2>
+            
+            <p>Hey there, future entrepreneur from <strong>${institution}</strong>!</p>
             
             <p>You're about to join India's most trusted student gig platform. Click the magic button below to complete your journey into the CampusKarma ecosystem:</p>
             

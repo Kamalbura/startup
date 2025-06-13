@@ -1,9 +1,9 @@
-const express = require('express');
-const rateLimit = require('express-rate-limit');
-const { body, validationResult } = require('express-validator');
-const User = require('../models/User');
-const authService = require('../utils/authService');
-const { authenticateToken } = require('../middleware/auth');
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import { body, validationResult } from 'express-validator';
+import User from '../models/User.js';
+import authService from '../utils/authService.js';
+import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -355,4 +355,4 @@ router.get('/verify-token', authenticateToken, (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;
