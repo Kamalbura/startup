@@ -1,45 +1,77 @@
+// CampusKarma Main App Component
+// Purpose: Main app routing and authentication flow
+
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import './index.css'
 
-// Pages
-import Landing from './pages/Landing'
-import Auth from './pages/Auth'
-import Dashboard from './pages/Dashboard'
-import PostTask from './pages/PostTask'
-import Profile from './pages/Profile'
-import SkillQuiz from './pages/SkillQuiz'
-import Messages from './pages/Messages'
-import Disputes from './pages/Disputes'
-import About from './pages/About'
+// Components
+import LoginPage from './pages/LoginPage'
+import Dashboard from './components/Dashboard'
+import CSSTest from './components/CSSTest'
 
-// Context Providers
-import { AuthProvider } from './context/AuthContext'
-import { SocketProvider } from './context/SocketContext'
+// Auth Context
+import { AuthProvider, useAuth } from './context/AuthContext'
 
 function App() {
   return (
     <AuthProvider>
-      <SocketProvider>
-        <Router>
-          <div className="min-h-screen bg-gray-50">
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Landing />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/about" element={<About />} />
-              
-              {/* Protected Routes */}
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/post-task" element={<PostTask />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/skills" element={<SkillQuiz />} />
-              <Route path="/messages" element={<Messages />} />
-              <Route path="/disputes" element={<Disputes />} />
-            </Routes>
-          </div>
-        </Router>
-      </SocketProvider>
+      <Router>
+        <AppContent />
+      </Router>
     </AuthProvider>
+  )
+}
+
+function AppContent() {
+  const { isAuthenticated, isGuest, isChecking } = useAuth()
+
+  // Show loading spinner while checking auth
+  if (isChecking) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-4">
+            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <p className="text-gray-600 font-medium">Loading CampusKarma...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <Routes>
+      {/* Temporary CSS Test Route */}
+      <Route 
+        path="/test" 
+        element={<CSSTest />} 
+      />
+      
+      {/* Public Routes */}
+      <Route 
+        path="/login" 
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage />} 
+      />
+      
+      {/* Protected Routes */}
+      <Route 
+        path="/dashboard" 
+        element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
+      />
+      
+      {/* Default Route */}
+      <Route 
+        path="/" 
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} 
+      />
+      
+      {/* Catch all - redirect to appropriate page */}
+      <Route 
+        path="*" 
+        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} 
+      />
+    </Routes>
   )
 }
 
