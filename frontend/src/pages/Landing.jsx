@@ -1,11 +1,15 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Shield, Zap, Users, Star, TrendingUp } from 'lucide-react'
-import anime from 'animejs'
+// import anime from 'animejs' // Temporarily disabled
 
 const Landing = () => {
   useEffect(() => {
-    // Hero animation
+    // Hero animation - temporarily disabled
+    console.log('Landing page loaded - animations disabled for now')
+    
+    // TODO: Re-enable animations after fixing animejs
+    /*
     anime({
       targets: '.hero-title',
       translateY: [50, 0],
@@ -41,6 +45,7 @@ const Landing = () => {
       delay: anime.stagger(100, {start: 600}),
       easing: 'easeOutExpo'
     })
+    */
   }, [])
 
   return (

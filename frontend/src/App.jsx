@@ -11,6 +11,7 @@ import VerificationPage from './pages/VerificationPage'
 import LoginPageOTP from './pages/LoginPageOTP'
 import Dashboard from './components/Dashboard'
 import CSSTest from './components/CSSTest'
+import Landing from './pages/Landing'
 
 // Auth Context
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -41,9 +42,14 @@ function AppContent() {
       </div>
     )
   }
-
   return (
     <Routes>
+      {/* Homepage/Landing */}
+      <Route 
+        path="/home" 
+        element={<Landing />} 
+      />
+      
       {/* Temporary CSS Test Route */}
       <Route 
         path="/test" 
@@ -70,16 +76,16 @@ function AppContent() {
         path="/dashboard" 
         element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
       />
-        {/* Default Route */}
+        {/* Default Route - Homepage */}
       <Route 
         path="/" 
-        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/verification" />} 
+        element={<Landing />} 
       />
       
-      {/* Catch all - redirect to appropriate page */}
+      {/* Catch all - redirect to homepage */}
       <Route 
         path="*" 
-        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/verification" />} 
+        element={<Navigate to="/" />} 
       />
     </Routes>
   )
