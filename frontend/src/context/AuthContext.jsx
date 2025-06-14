@@ -188,6 +188,23 @@ export function AuthProvider({ children }) {
     }
   }
 
+  // Manual login with token and user data (for OTP verification)
+  const login = async (token, user) => {
+    try {
+      // Store token
+      localStorage.setItem('campuskarma_token', token)
+      apiService.setToken(token)
+      
+      // Set user in state
+      dispatch({ type: AUTH_ACTIONS.SET_USER, payload: user })
+      
+      return true
+    } catch (error) {
+      console.error('Login failed:', error)
+      throw error
+    }
+  }
+
   // Logout
   const logout = async () => {
     try {
@@ -229,6 +246,7 @@ export function AuthProvider({ children }) {
     // Actions
     sendMagicLink,
     verifyMagicLink,
+    login,
     logout,
     refreshToken,
     clearError,

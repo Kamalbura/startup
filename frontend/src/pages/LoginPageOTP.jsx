@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const LoginPageOTP = () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const { login } = useAuth()
   const [email, setEmail] = useState(location.state?.email || '')
   const [otp, setOTP] = useState('')
   const [step, setStep] = useState('email') // 'email' or 'otp'
@@ -19,7 +21,7 @@ const LoginPageOTP = () => {
     setMessage('')
 
     try {
-      const response = await fetch('http://localhost:5000/api/v1/otp-auth/send-otp', {
+      const response = await fetch('http://localhost:5000/api/v1/auth/send-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,26 +51,29 @@ const LoginPageOTP = () => {
     setError('')
     setMessage('')
 
-    try {
-      const response = await fetch('http://localhost:5000/api/v1/otp-auth/verify-otp', {
+    try {      const response = await fetch('http://localhost:5000/api/v1/auth/verify-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        },        body: JSON.stringify({ email, otp }),
+        },
+        body: JSON.stringify({ email, otp }),
       })
 
       const data = await response.json()
 
       if (data.success) {
-        // Store the token with the correct key that AuthContext expects
-        localStorage.setItem('campuskarma_token', data.data.token)
-        
-        setMessage('Login successful! Redirecting...')
-        
-        // Force a page reload to trigger auth context to check the new token
-        setTimeout(() => {
-          window.location.reload()
-        }, 1500)
+        // Use the auth context login function
+        try {
+          await login(data.data.token, data.data.user)
+          setMessage('Login successful! Redirecting...')
+          
+          // Navigate to dashboard
+          setTimeout(() => {
+            navigate('/dashboard')
+          }, 1000)
+        } catch (loginError) {
+          setError('Failed to complete login. Please try again.')
+        }
       } else {
         setError(data.message || 'OTP verification failed')
       }

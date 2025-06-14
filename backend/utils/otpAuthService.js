@@ -1,17 +1,34 @@
 // CampusKarma OTP Authentication Service
-// Purpose: OTP-based authentication for development and production
+// Purpose: Secure OTP-based authentication with MongoDB persistence
 
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import nodemailer from 'nodemailer'
+import OTP from '../models/OTP.js'
 
-// In-memory OTP storage (replace with Redis/Database in production)
-const otpStore = new Map()
-const userStore = new Map() // Temporary user storage
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+// Load college domains whitelist
+let collegeDomains = {}
+try {
+  const domainsFile = fs.readFileSync(path.join(__dirname, 'collegeDomains.json'), 'utf8')
+  collegeDomains = JSON.parse(domainsFile)
+} catch (error) {
+  console.error('Failed to load college domains:', error)
+  collegeDomains = { allowedDomains: [], institutionMapping: {} }
+}
 
 class OTPAuthService {
   constructor() {
     this.jwtSecret = process.env.JWT_SECRET || 'campuskarma-secret-key'
     this.otpExpiry = 10 * 60 * 1000 // 10 minutes
+    this.maxAttempts = 3
+    this.rateLimitWindow = 60 * 60 * 1000 // 1 hour
+    this.maxOTPsPerHour = 3
   }
 
   // Generate 6-digit OTP
@@ -19,36 +36,46 @@ class OTPAuthService {
     return Math.floor(100000 + Math.random() * 900000).toString()
   }
 
-  // Validate college email domains
+  // Validate college email domains using whitelist
   validateCollegeEmail(email) {
-    const allowedDomains = [
-      "vnrvjiet.ac.in", "cbit.ac.in", "mgit.ac.in", "mgit.com", "vce.ac.in",
-      "kmit.in", "vit.ac.in", "iiit.ac.in", "students.iiit.ac.in", "iith.ac.in",
-      "nitw.ac.in", "cvr.ac.in", "bvrit.ac.in", "ellenkicet.ac.in", "villamariecollege.ac.in",
-      "edu", "edu.in", "ac.in"
-    ]
-    
-    if (!email || !email.includes('@')) {
+    if (!email?.includes('@')) {
       return { isValid: false, reason: 'Invalid email format' }
     }
     
     const emailDomain = email.split('@')[1]?.toLowerCase()
-    const isValidDomain = allowedDomains.some(domain => 
+    const isValidDomain = collegeDomains.allowedDomains.some(domain => 
       emailDomain === domain || emailDomain.endsWith('.' + domain)
     )
     
     if (!isValidDomain) {
       return { 
         isValid: false, 
-        reason: 'Please use your college email from a supported institution' 
+        reason: 'Please use your college email from a supported institution (.ac.in, .edu.in, or .edu domains)' 
       }
     }
+
+    const institution = collegeDomains.institutionMapping[emailDomain] || 
+                       emailDomain.split('.').slice(-2).join('.').toUpperCase()
     
-    return { isValid: true, domain: emailDomain }
+    return { isValid: true, domain: emailDomain, institution }
   }
 
-  // Send OTP (for development, we'll just log it)
-  async sendOTP(email) {
+  // Check rate limiting
+  async checkRateLimit(email) {
+    const oneHourAgo = new Date(Date.now() - this.rateLimitWindow)
+    const recentOTPs = await OTP.countDocuments({
+      email,
+      createdAt: { $gte: oneHourAgo }
+    })
+
+    if (recentOTPs >= this.maxOTPsPerHour) {
+      throw new Error(`Rate limit exceeded. Maximum ${this.maxOTPsPerHour} OTP requests per hour.`)
+    }
+    
+    return true
+  }
+  // Send OTP with MongoDB persistence
+  async sendOTP(email, ipAddress = null, userAgent = null) {
     try {
       // Validate email
       const validation = this.validateCollegeEmail(email)
@@ -56,28 +83,39 @@ class OTPAuthService {
         throw new Error(validation.reason)
       }
 
+      // Check rate limiting
+      await this.checkRateLimit(email)
+
       // Generate OTP
       const otp = this.generateOTP()
-      const expiresAt = Date.now() + this.otpExpiry
+      const expiresAt = new Date(Date.now() + this.otpExpiry)
 
-      // Store OTP
-      otpStore.set(email, { 
-        otp, 
-        expiresAt, 
-        attempts: 0,
-        createdAt: Date.now()
+      // Delete any existing OTP for this email
+      await OTP.deleteMany({ email })
+
+      // Store OTP in MongoDB
+      const otpDoc = new OTP({
+        email,
+        otp,
+        expiresAt,
+        institution: validation.institution,
+        domain: validation.domain,
+        ipAddress,
+        userAgent
       })
 
-      // For development: Log OTP to console (replace with SMS/Email service)
-      console.log(`🔐 OTP for ${email}: ${otp} (expires in 10 minutes)`)
+      await otpDoc.save()
+
+      // For development: Log OTP to console (replace with email service in production)
+      console.log(`🔐 OTP for ${email} (${validation.institution}): ${otp} (expires in 10 minutes)`)
       
-      // In production, send via SMS/Email service
-      // await this.sendOTPViaEmail(email, otp)
-      // await this.sendOTPViaSMS(email, otp)
+      // TODO: In production, send via email service
+      // await this.sendOTPViaEmail(email, otp, validation.institution)
 
       return {
         success: true,
-        message: 'OTP sent successfully',
+        message: 'OTP sent successfully to your college email',
+        institution: validation.institution,
         expiresIn: this.otpExpiry / 1000 // seconds
       }
     } catch (error) {
@@ -85,19 +123,76 @@ class OTPAuthService {
       throw error
     }
   }
-
-  // Verify OTP and create user session
+  // Verify OTP with MongoDB persistence
   async verifyOTP(email, otp) {
     try {
-      const storedData = otpStore.get(email)
+      // Find the most recent OTP for this email
+      const otpDoc = await OTP.findOne({ 
+        email,
+        isVerified: false
+      }).sort({ createdAt: -1 })
       
-      if (!storedData) {
-        throw new Error('OTP not found or expired. Please request a new one.')
+      if (!otpDoc) {
+        throw new Error('OTP not found or already used. Please request a new one.')
       }
 
-      // Check expiry
-      if (Date.now() > storedData.expiresAt) {
-        otpStore.delete(email)
+      // Check if OTP is expired
+      if (otpDoc.isExpired()) {
+        await OTP.deleteOne({ _id: otpDoc._id })
+        throw new Error('OTP has expired. Please request a new one.')
+      }
+
+      // Check attempts
+      if (otpDoc.attempts >= this.maxAttempts) {
+        await OTP.deleteOne({ _id: otpDoc._id })
+        throw new Error('Maximum verification attempts exceeded. Please request a new OTP.')
+      }
+
+      // Verify OTP
+      if (otpDoc.otp !== otp) {
+        await otpDoc.incrementAttempts()
+        const remainingAttempts = this.maxAttempts - otpDoc.attempts - 1
+        throw new Error(`Invalid OTP. ${remainingAttempts} attempts remaining.`)
+      }
+
+      // Mark as verified
+      await otpDoc.markAsVerified()
+
+      // Generate JWT token
+      const user = {
+        email,
+        institution: otpDoc.institution,
+        domain: otpDoc.domain,
+        verified: true,
+        verifiedAt: new Date()
+      }
+
+      const token = jwt.sign(user, this.jwtSecret, { 
+        expiresIn: process.env.JWT_EXPIRES_IN || '7d' 
+      })
+
+      // Store user session (for development - in production use Redis or database)
+      const userData = {
+        ...user,
+        id: crypto.randomUUID(),
+        karma: 50, // Initial karma score
+        joinedAt: new Date(),
+        lastActive: new Date()
+      }
+
+      console.log(`✅ User verified: ${email} from ${otpDoc.institution}`)
+
+      return {
+        success: true,
+        message: 'OTP verified successfully',
+        token,
+        user: userData
+      }
+    } catch (error) {
+      console.error('Verify OTP error:', error)
+      throw error
+    }
+  }
         throw new Error('OTP has expired. Please request a new one.')
       }
 

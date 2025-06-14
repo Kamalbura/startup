@@ -1,160 +1,208 @@
 // CampusKarma OTP Authentication Routes
-// Purpose: OTP-based authentication endpoints
+// Purpose: Secure OTP-based authentication endpoints with MongoDB
 
 import express from 'express'
 import { body, validationResult } from 'express-validator'
 import rateLimit from 'express-rate-limit'
-import otpAuthService from '../utils/otpAuthService.js'
+import otpAuthService from '../utils/otpAuthService_new.js'
 
 const router = express.Router()
 
-// Rate limiting for OTP requests
-const otpRateLimit = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // max 5 OTP requests per 15 minutes
+// Rate limiting
+const otpSendRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3,
   message: {
     success: false,
-    message: 'Too many OTP requests. Please try again later.',
-    retryAfter: '15 minutes'
+    message: 'Too many OTP requests. Please try again in 1 hour.',
+    retryAfter: '1 hour',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.body.email || req.ip,
+})
+
+const otpVerifyRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  message: {
+    success: false,
+    message: 'Too many verification attempts. Please try again later.',
+    retryAfter: '15 minutes',
   },
   standardHeaders: true,
   legacyHeaders: false,
 })
 
-// Validation middleware
+// Validation Middleware
 const validateOTPRequest = [
   body('email')
     .isEmail()
     .normalizeEmail()
-    .withMessage('Please provide a valid email address'),
+    .withMessage('Please provide a valid email address')
+    .custom((email) => {
+      if (!otpAuthService.isSupportedDomain(email)) {
+        throw new Error('Please use a college email from a supported institution (.ac.in, .edu.in, or .edu domains)')
+      }
+      return true
+    }),
 ]
 
 const validateOTPVerification = [
-  body('email')
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Please provide a valid email address'),
-  body('otp')
-    .isLength({ min: 6, max: 6 })
-    .isNumeric()
-    .withMessage('OTP must be a 6-digit number'),
+  body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email address'),
+  body('otp').isLength({ min: 6, max: 6 }).isNumeric().withMessage('OTP must be a 6-digit number'),
 ]
 
 // Send OTP
-router.post('/send-otp', otpRateLimit, validateOTPRequest, async (req, res) => {
+router.post('/send-otp', otpSendRateLimit, validateOTPRequest, async (req, res) => {
   try {
-    // Check validation errors
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         message: 'Validation failed',
-        errors: errors.array()
+        errors: errors.array().map((err) => err.msg),
       })
     }
 
     const { email } = req.body
+    const ipAddress = req.ip || req.connection.remoteAddress
+    const userAgent = req.get('User-Agent')
 
-    // Send OTP
-    const result = await otpAuthService.sendOTP(email)
+    const result = await otpAuthService.sendOTP(email, ipAddress, userAgent)
 
     res.status(200).json({
       success: true,
-      message: 'OTP sent successfully to your email',
+      message: result.message,
+      institution: result.institution,
       expiresIn: result.expiresIn,
-      email: email
+      supportedDomains: otpAuthService.getSupportedDomains().slice(0, 10),
     })
   } catch (error) {
     console.error('Send OTP error:', error)
-    res.status(400).json({
+
+    if (error.message.includes('Rate limit exceeded')) {
+      return res.status(429).json({
+        success: false,
+        message: error.message,
+        retryAfter: '1 hour',
+      })
+    }
+
+    if (error.message.includes('supported institution')) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+        supportedDomains: otpAuthService.getSupportedDomains().slice(0, 15),
+      })
+    }
+
+    res.status(500).json({
       success: false,
-      message: error.message || 'Failed to send OTP'
+      message: 'Failed to send OTP. Please try again.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     })
   }
 })
 
 // Verify OTP
-router.post('/verify-otp', validateOTPVerification, async (req, res) => {
+router.post('/verify-otp', otpVerifyRateLimit, validateOTPVerification, async (req, res) => {
   try {
-    // Check validation errors
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         message: 'Validation failed',
-        errors: errors.array()
+        errors: errors.array().map((err) => err.msg),
       })
     }
 
     const { email, otp } = req.body
-
-    // Verify OTP
     const result = await otpAuthService.verifyOTP(email, otp)
 
     res.status(200).json({
       success: true,
-      message: 'Login successful',
+      message: result.message,
       data: {
         token: result.token,
-        user: result.user
-      }
+        user: result.user,
+      },
     })
   } catch (error) {
     console.error('Verify OTP error:', error)
+
+    if (error.message.includes('Rate limit exceeded')) {
+      return res.status(429).json({
+        success: false,
+        message: error.message,
+        retryAfter: '1 hour',
+      })
+    }
+
+    if (error.message.includes('Maximum verification attempts')) {
+      return res.status(429).json({
+        success: false,
+        message: error.message,
+        action: 'request_new_otp',
+      })
+    }
+
+    if (error.message.includes('expired')) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+        action: 'request_new_otp',
+      })
+    }
+
+    if (error.message.includes('Invalid OTP')) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+        action: 'retry_verification',
+      })
+    }
+
     res.status(400).json({
       success: false,
-      message: error.message || 'OTP verification failed'
+      message: 'OTP verification failed. Please try again.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     })
   }
 })
 
-// Verify token (for checking if user is still logged in)
+// Verify token
 router.get('/verify-token', async (req, res) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '')
-    
+
     if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'No token provided'
-      })
+      return res.status(401).json({ success: false, message: 'No token provided' })
     }
 
     const result = otpAuthService.verifyToken(token)
-    
+
     res.status(200).json({
       success: true,
       message: 'Token is valid',
-      data: result.user
+      data: result.user,
     })
-  } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: 'Invalid token'
-    })
+  } catch {
+    res.status(401).json({ success: false, message: 'Invalid token' })
   }
 })
 
-// Get current user profile
+// Get current user
 router.get('/me', async (req, res) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '')
-    
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'No token provided'
-      })
-    }
+    if (!token) return res.status(401).json({ success: false, message: 'No token provided' })
 
     const tokenResult = otpAuthService.verifyToken(token)
     const user = otpAuthService.getUserByEmail(tokenResult.user.email)
-    
+
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      })
+      return res.status(404).json({ success: false, message: 'User not found' })
     }
 
     res.status(200).json({
@@ -168,15 +216,12 @@ router.get('/me', async (req, res) => {
           college: user.college,
           karma: user.karma,
           stats: user.stats,
-          isVerified: user.isVerified
-        }
-      }
+          isVerified: user.isVerified,
+        },
+      },
     })
-  } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: 'Authentication failed'
-    })
+  } catch {
+    res.status(401).json({ success: false, message: 'Authentication failed' })
   }
 })
 
@@ -184,37 +229,23 @@ router.get('/me', async (req, res) => {
 router.post('/refresh-token', async (req, res) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '')
-    
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'No token provided'
-      })
-    }
+    if (!token) return res.status(401).json({ success: false, message: 'No token provided' })
 
     const result = otpAuthService.refreshToken(token)
-    
+
     res.status(200).json({
       success: true,
       message: 'Token refreshed successfully',
-      data: {
-        token: result.token
-      }
+      data: { token: result.token },
     })
-  } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: 'Token refresh failed'
-    })
+  } catch {
+    res.status(401).json({ success: false, message: 'Token refresh failed' })
   }
 })
 
-// Logout (client-side token removal)
+// Logout
 router.post('/logout', async (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'Logged out successfully'
-  })
+  res.status(200).json({ success: true, message: 'Logged out successfully' })
 })
 
 export default router

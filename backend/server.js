@@ -17,7 +17,6 @@ import db from './config/database.js'
 
 // Import routes
 import authRoutes from './routes/auth.js'
-import otpAuthRoutes from './routes/otpAuth.js'
 import userRoutes from './routes/users.js'
 import taskRoutes from './routes/tasks.js'
 import skillRoutes from './routes/skills.js'
@@ -153,14 +152,13 @@ class CampusKarmaServer {
         documentation: `${req.protocol}://${req.get('host')}${apiPrefix}/docs`,        endpoints: {
           health: '/health',
           auth: `${apiPrefix}/auth`,
-          otpAuth: `${apiPrefix}/otp-auth`,
           users: `${apiPrefix}/users`,
           tasks: `${apiPrefix}/tasks`,
-          skills: `${apiPrefix}/skills`        }
+          skills: `${apiPrefix}/skills`
+        }
       })
     })    // API Routes
     this.app.use(`${apiPrefix}/auth`, authRoutes)
-    this.app.use(`${apiPrefix}/otp-auth`, otpAuthRoutes)
     this.app.use(`${apiPrefix}/users`, userRoutes)
     this.app.use(`${apiPrefix}/tasks`, taskRoutes)
     this.app.use(`${apiPrefix}/skills`, skillRoutes)
