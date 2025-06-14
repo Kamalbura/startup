@@ -66,7 +66,7 @@ const Landing = () => {
               <a href="#about" className="text-gray-600 hover:text-karma-600 transition-colors">
                 About
               </a>
-              <Link to="/auth" className="btn-karma">
+              <Link to="/login-otp" className="btn-karma">
                 Get Started
               </Link>
             </div>
@@ -87,11 +87,11 @@ const Landing = () => {
               Earn real money, build verified reputation, and connect with peers across campuses.
             </p>
             <div className="hero-cta flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/auth" className="btn-karma text-lg px-8 py-3 inline-flex items-center">
+              <Link to="/login-otp" className="btn-karma text-lg px-8 py-3 inline-flex items-center">
                 Start Earning
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
-              <Link to="/auth" className="btn-karma-outline text-lg px-8 py-3">
+              <Link to="/login" className="btn-karma-outline text-lg px-8 py-3">
                 Post a Task
               </Link>
             </div>
@@ -180,7 +180,7 @@ const Landing = () => {
           <p className="text-xl text-white/90 mb-8">
             Join thousands of students already earning and building their reputation
           </p>
-          <Link to="/auth" className="btn-karma bg-white text-karma-600 hover:bg-gray-100 text-lg px-8 py-3 inline-flex items-center">
+          <Link to="/login-otp" className="btn-karma bg-white text-karma-600 hover:bg-gray-100 text-lg px-8 py-3 inline-flex items-center">
             Join CampusKarma
             <ArrowRight className="ml-2 h-5 w-5" />
           </Link>

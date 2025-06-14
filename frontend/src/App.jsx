@@ -12,6 +12,10 @@ import LoginPageOTP from './pages/LoginPageOTP'
 import Dashboard from './components/Dashboard'
 import CSSTest from './components/CSSTest'
 import Landing from './pages/Landing'
+import About from './pages/About'
+import Disputes from './pages/Disputes'
+import PostTask from './pages/PostTask'
+import Skills from './pages/Skills'
 
 // Auth Context
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -70,13 +74,19 @@ function AppContent() {
         path="/login-otp" 
         element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPageOTP />} 
       />
-      
-      {/* Protected Routes */}
+        {/* Protected Routes */}
       <Route 
         path="/dashboard" 
         element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
       />
-        {/* Default Route - Homepage */}
+
+      {/* Additional Pages */}
+      <Route path="/about" element={<About />} />
+      <Route path="/disputes" element={<Disputes />} />
+      <Route path="/post-task" element={<PostTask />} />
+      <Route path="/skills" element={<Skills />} />
+        
+      {/* Default Route - Homepage */}
       <Route 
         path="/" 
         element={<Landing />} 

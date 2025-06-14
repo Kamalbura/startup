@@ -30,16 +30,14 @@ class DatabaseConnection {
     if (this.isConnected) {
       logger.info('Database already connected')
       return
-    }
-
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/campuskarma'
-      const options = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+    }    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/campuskarma'
+    
+    const options = {
+      // Removed deprecated options for modern MongoDB driver compatibility
       maxPoolSize: 10, // Maintain up to 10 socket connections
       serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
       socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-      // Removed deprecated options: bufferCommands and bufferMaxEntries
+      family: 4 // Use IPv4, skip trying IPv6
     }
 
     try {
