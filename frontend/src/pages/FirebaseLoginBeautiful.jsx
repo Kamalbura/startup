@@ -1,12 +1,9 @@
-// SkillLance Beautiful Login v1.0.0.0
-// Purpose: Stunning, modern Firebase authentication interface
+// SkillLance Beautiful Firebase Authentication Component
+// Purpose: Professional full-width split layout authentication without card boxes
 
 import React, { useState } from 'react';
 import { useAuth, useAuthActions, AUTH_STATES } from '../context/FirebaseAuthContext';
-import { 
-  Mail, Lock, Eye, EyeOff, User, AlertCircle, 
-  ArrowRight, Sparkles 
-} from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, GraduationCap, BookOpen, Calendar, ArrowRight, Sparkles, Shield, Zap, Users } from 'lucide-react';
 
 export default function SkillLanceLoginBeautiful() {
   const { status, error, loading } = useAuth();

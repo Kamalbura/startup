@@ -116,65 +116,75 @@ const AuthDispatchContext = createContext();
 // Auth Provider Component
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
-  // Handle authentication state changes
+    // Handle authentication state changes
   useEffect(() => {
     console.log('🔥 Setting up Firebase auth listener...');
+    console.log('🔥 firebaseAuthService:', firebaseAuthService);
     
-    const unsubscribe = firebaseAuthService.onAuthStateChange(async (user) => {
-      console.log('🔥 Auth state changed:', user ? 'User logged in' : 'No user');
-      
-      if (user) {
-        try {
-          console.log('🔥 Fetching user profile for:', user.uid);
-          // Get user profile from Firestore
-          const profile = await firebaseAuthService.getUserProfile(user.uid);
-          console.log('🔥 User profile:', profile);
-            if (!user.emailVerified) {
-            console.log('🔥 Email verification required, but allowing for development');
-            // For development, allow unverified emails
-            if (!profile?.displayName && !user.displayName) {
+    try {
+      const unsubscribe = firebaseAuthService.onAuthStateChange(async (user) => {
+        console.log('🔥 Auth state changed:', user ? 'User logged in' : 'No user');
+        
+        if (user) {
+          try {
+            console.log('🔥 Fetching user profile for:', user.uid);
+            // Get user profile from Firestore
+            const profile = await firebaseAuthService.getUserProfile(user.uid);
+            console.log('🔥 User profile:', profile);
+              if (!user.emailVerified) {
+              console.log('🔥 Email verification required, but allowing for development');
+              // For development, allow unverified emails
+              if (!profile?.displayName && !user.displayName) {
+                console.log('🔥 Profile incomplete - missing display name');
+                dispatch({
+                  type: AUTH_ACTIONS.SET_PROFILE_INCOMPLETE,
+                  payload: { user, profile }
+                });
+              } else {
+                console.log('🔥 User authenticated successfully (dev mode)');
+                dispatch({
+                  type: AUTH_ACTIONS.SET_AUTHENTICATED,
+                  payload: { user, profile }
+                });
+              }
+            } else if (!profile?.displayName && !user.displayName) {
               console.log('🔥 Profile incomplete - missing display name');
               dispatch({
                 type: AUTH_ACTIONS.SET_PROFILE_INCOMPLETE,
                 payload: { user, profile }
               });
             } else {
-              console.log('🔥 User authenticated successfully (dev mode)');
+              console.log('🔥 User authenticated successfully');
               dispatch({
                 type: AUTH_ACTIONS.SET_AUTHENTICATED,
                 payload: { user, profile }
               });
             }
-          } else if (!profile?.displayName && !user.displayName) {
-            console.log('🔥 Profile incomplete - missing display name');
+          } catch (error) {
+            console.error('🔥 Error fetching user profile:', error);
             dispatch({
-              type: AUTH_ACTIONS.SET_PROFILE_INCOMPLETE,
-              payload: { user, profile }
-            });
-          } else {
-            console.log('🔥 User authenticated successfully');
-            dispatch({
-              type: AUTH_ACTIONS.SET_AUTHENTICATED,
-              payload: { user, profile }
+              type: AUTH_ACTIONS.SET_ERROR,
+              payload: error.message
             });
           }
-        } catch (error) {
-          console.error('🔥 Error fetching user profile:', error);
-          dispatch({
-            type: AUTH_ACTIONS.SET_ERROR,
-            payload: error.message
-          });
+        } else {
+          console.log('🔥 User unauthenticated');
+          dispatch({ type: AUTH_ACTIONS.SET_UNAUTHENTICATED });
         }
-      } else {
-        console.log('🔥 User unauthenticated');
-        dispatch({ type: AUTH_ACTIONS.SET_UNAUTHENTICATED });
-      }
-    });
+      });
 
-    return () => {
-      console.log('🔥 Cleaning up auth listener');
-      unsubscribe();
-    };
+      return () => {
+        console.log('🔥 Cleaning up auth listener');
+        unsubscribe();
+      };
+    } catch (error) {
+      console.error('🔥 Error setting up auth listener:', error);
+      dispatch({
+        type: AUTH_ACTIONS.SET_ERROR,  
+        payload: error.message
+      });
+      return () => {}; // Return empty cleanup function
+    }
   }, []);
 
   return (
