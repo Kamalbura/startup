@@ -53,10 +53,9 @@ const Landing = () => {
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-sm border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+          <div className="flex justify-between items-center h-16">            <div className="flex items-center">
               <div className="font-karma font-bold text-2xl text-gradient">
-                CampusKarma
+                SkillLance
               </div>
             </div>
             <div className="hidden md:flex items-center space-x-8">
@@ -77,10 +76,9 @@ const Landing = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h1 className="hero-title text-5xl md:text-7xl font-karma font-bold text-gray-900 mb-6">
+          <div className="text-center">            <h1 className="hero-title text-5xl md:text-7xl font-karma font-bold text-gray-900 mb-6">
               Turn Your Skills Into{' '}
-              <span className="text-gradient">CampusKarma</span>
+              <span className="text-gradient">SkillLance</span>
             </h1>
             <p className="hero-subtitle text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
               India's first trust-based student skill economy. 
@@ -181,7 +179,7 @@ const Landing = () => {
             Join thousands of students already earning and building their reputation
           </p>
           <Link to="/login-otp" className="btn-karma bg-white text-karma-600 hover:bg-gray-100 text-lg px-8 py-3 inline-flex items-center">
-            Join CampusKarma
+            Join SkillLance
             <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
         </div>
@@ -192,7 +190,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <div className="font-karma font-bold text-2xl mb-4">CampusKarma</div>
+              <div className="font-karma font-bold text-2xl mb-4">SkillLance</div>
               <p className="text-gray-400">
                 Empowering India's student economy, one skill at a time.
               </p>
@@ -223,7 +221,7 @@ const Landing = () => {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 CampusKarma. Made with ❤️ for India's student community.</p>
+            <p>&copy; 2024 SkillLance. Made with ❤️ for India's student community.</p>
           </div>
         </div>
       </footer>

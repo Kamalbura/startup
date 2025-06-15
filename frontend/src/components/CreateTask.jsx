@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/FirebaseAuthContext'
 import { IndianRupee, Clock, MapPin, Tag, FileText, Plus, X } from 'lucide-react'
 
 const CreateTask = () => {

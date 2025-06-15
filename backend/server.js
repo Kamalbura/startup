@@ -1,4 +1,4 @@
-// CampusKarma Server - Main Entry Point
+// SkillLance Server - Main Entry Point
 // Purpose: Express server with security, middleware, and route configuration
 
 import express from 'express'
@@ -20,6 +20,7 @@ import authRoutes from './routes/auth.js'
 import userRoutes from './routes/users.js'
 import taskRoutes from './routes/tasks.js'
 import skillRoutes from './routes/skills.js'
+import firebaseAuthRoutes from './routes/firebaseAuth.js'
 
 // Import middleware
 import { authErrorHandler } from './middleware/auth.js'
@@ -152,6 +153,7 @@ class CampusKarmaServer {
         documentation: `${req.protocol}://${req.get('host')}${apiPrefix}/docs`,        endpoints: {
           health: '/health',
           auth: `${apiPrefix}/auth`,
+          firebaseAuth: `${apiPrefix}/firebase-auth`,
           users: `${apiPrefix}/users`,
           tasks: `${apiPrefix}/tasks`,
           skills: `${apiPrefix}/skills`
@@ -159,6 +161,7 @@ class CampusKarmaServer {
       })
     })    // API Routes
     this.app.use(`${apiPrefix}/auth`, authRoutes)
+    this.app.use(`${apiPrefix}/firebase-auth`, firebaseAuthRoutes)
     this.app.use(`${apiPrefix}/users`, userRoutes)
     this.app.use(`${apiPrefix}/tasks`, taskRoutes)
     this.app.use(`${apiPrefix}/skills`, skillRoutes)

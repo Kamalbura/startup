@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/FirebaseAuthContext'
 import { User, Mail, MapPin, Calendar, Star, TrendingUp, Briefcase, Edit, Camera } from 'lucide-react'
 
 const Profile = () => {

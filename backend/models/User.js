@@ -5,10 +5,21 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
 
 const userSchema = new mongoose.Schema({
+  // Firebase Integration
+  firebaseUid: {
+    type: String,
+    unique: true,
+    sparse: true, // Allows null values while maintaining uniqueness
+    index: true
+  },
+
   // Basic Information
   name: {
     type: String,
-    required: [true, 'Name is required'],
+    required: function() {
+      // Name required only if firebaseUid is not present (legacy users)
+      return !this.firebaseUid;
+    },
     trim: true,
     minlength: [2, 'Name must be at least 2 characters'],
     maxlength: [50, 'Name cannot exceed 50 characters']
@@ -21,10 +32,29 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     validate: {
       validator: function(email) {
-        return /^[^\s@]+@[^\s@]+\.edu$/.test(email)
+        // Support multiple college email formats
+        const collegeEmailPatterns = [
+          /^[^\s@]+@[^\s@]+\.edu$/i,
+          /^[^\s@]+@[^\s@]+\.edu\.in$/i,
+          /^[^\s@]+@[^\s@]+\.ac\.in$/i,
+          /^[^\s@]+@[^\s@]+\.vce\.ac\.in$/i
+        ];
+        return collegeEmailPatterns.some(pattern => pattern.test(email));
       },
-      message: 'Only .edu email addresses are allowed'
+      message: 'Only college email addresses (.edu, .ac.in, .edu.in) are allowed'
     }
+  },
+
+  // Email verification status (from Firebase)
+  emailVerified: {
+    type: Boolean,
+    default: false
+  },
+
+  // Profile picture (from Firebase or uploaded)
+  profilePicture: {
+    type: String,
+    default: ''
   },
 
   // College Information

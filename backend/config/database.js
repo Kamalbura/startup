@@ -1,4 +1,4 @@
-// CampusKarma Database Configuration
+// SkillLance Database Configuration
 // Purpose: MongoDB connection with production-ready settings
 
 import mongoose from 'mongoose'
