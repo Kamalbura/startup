@@ -1,4 +1,4 @@
-/* CampusKarma - TailwindCSS + Custom Styles */
+/* SkillLance v1.0.0.0 - TailwindCSS + Premium Animations */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -7,8 +7,8 @@
 
 /* Custom Variables */
 :root {
-  --karma-gradient: linear-gradient(135deg, #0ea5e9 0%, #22c55e 100%);
-  --trust-glow: 0 0 20px rgba(34, 197, 94, 0.3);
+  --skilllance-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --trust-glow: 0 0 20px rgba(139, 92, 246, 0.3);
 }
 
 /* Custom Base Styles */
