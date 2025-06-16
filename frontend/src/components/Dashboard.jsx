@@ -222,11 +222,9 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </header>
-
-        {/* Main Content Area */}
+        </header>        {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             {renderActiveTabContent(activeTab, profile, user)}
           </div>
         </main>
@@ -283,10 +281,8 @@ const DashboardHome = ({ profile, user }) => (
           )}
         </div>
       </div>
-    </div>
-
-    {/* Stats Grid */}
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    </div>    {/* Stats Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
       <StatCard
         title="Trust Score"
         value={profile?.trustScore || 100}
@@ -393,178 +389,196 @@ const DashboardHome = ({ profile, user }) => (
 )
 
 // Placeholder components for other tabs
-const ProfileView = ({ profile, user }) => (
-  <div className="space-y-6">
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Management</h3>
-      <p className="text-gray-600 mb-6">Complete your professional profile to attract opportunities.</p>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-          <input 
-            type="text" 
-            value={profile?.displayName || user?.displayName || ''}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter your full name"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">College</label>
-          <input 
-            type="text" 
-            value={profile?.college || ''}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter your college name"
-          />
+const ProfileView = ({ profile, user }) => {
+  return (
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Management</h3>
+        <p className="text-gray-600 mb-6">Complete your professional profile to attract opportunities.</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+            <input 
+              type="text" 
+              value={profile?.displayName || user?.displayName || ''}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter your full name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">College</label>
+            <input 
+              type="text" 
+              value={profile?.college || ''}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter your college name"
+            />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-)
+  )
+}
 
-const SkillsView = ({ profile }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-    <h3 className="text-lg font-semibold text-gray-900 mb-4">Skills & Expertise</h3>
-    <p className="text-gray-600 mb-6">Showcase your skills and get verified by peers.</p>
-    
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-      {['JavaScript', 'React', 'Python', 'UI/UX Design', 'Node.js', 'Machine Learning'].map((skill) => (
-        <div key={skill} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-          <span className="text-sm font-medium text-gray-700">{skill}</span>
-          <button className="text-blue-600 hover:text-blue-700 text-xs">+Add</button>
-        </div>
-      ))}
-    </div>
-  </div>
-)
-
-const ProjectsView = ({ profile }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-    <h3 className="text-lg font-semibold text-gray-900 mb-4">My Projects</h3>
-    <p className="text-gray-600 mb-6">Track your project portfolio and earnings.</p>
-    
-    <div className="text-center py-12">
-      <Briefcase className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-      <h4 className="text-lg font-medium text-gray-900 mb-2">No Projects Yet</h4>
-      <p className="text-gray-600 mb-6">Start by browsing opportunities and submitting proposals.</p>
-      <button className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-        Browse Opportunities
-      </button>
-    </div>
-  </div>
-)
-
-const OpportunitiesView = () => (
-  <div className="space-y-6">
+const SkillsView = ({ profile }) => {
+  return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Opportunities</h3>
-      <p className="text-gray-600 mb-6">Browse internships, freelance projects, and job openings.</p>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Skills & Expertise</h3>
+      <p className="text-gray-600 mb-6">Showcase your skills and get verified by peers.</p>
       
-      <div className="flex flex-wrap gap-4 mb-6">
-        <button className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">All</button>
-        <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">Web Development</button>
-        <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">Design</button>
-        <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">Data Science</button>
-        <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">Mobile Development</button>
-      </div>
-      
-      <div className="space-y-4">
-        {[1,2,3,4].map((i) => (
-          <OpportunityCard
-            key={i}
-            title={`Amazing Project Opportunity ${i}`}
-            company="Tech Company"
-            location="Remote"
-            budget="₹10,000 - ₹20,000"
-            tags={['React', 'Node.js', 'Design']}
-            postedTime={`${i} hours ago`}
-          />
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        {['JavaScript', 'React', 'Python', 'UI/UX Design', 'Node.js', 'Machine Learning'].map((skill) => (
+          <div key={skill} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+            <span className="text-sm font-medium text-gray-700">{skill}</span>
+            <button className="text-blue-600 hover:text-blue-700 text-xs">+Add</button>
+          </div>
         ))}
       </div>
     </div>
-  </div>
-)
+  )
+}
 
-const EventsView = () => (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-    <h3 className="text-lg font-semibold text-gray-900 mb-4">Events & Workshops</h3>
-    <p className="text-gray-600 mb-6">Join hackathons, workshops, and networking events.</p>
-    
-    <div className="text-center py-12">
-      <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-      <h4 className="text-lg font-medium text-gray-900 mb-2">No Upcoming Events</h4>
-      <p className="text-gray-600">Check back soon for exciting events and workshops!</p>
+const ProjectsView = ({ profile }) => {
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">My Projects</h3>
+      <p className="text-gray-600 mb-6">Track your project portfolio and earnings.</p>
+      
+      <div className="text-center py-12">
+        <Briefcase className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+        <h4 className="text-lg font-medium text-gray-900 mb-2">No Projects Yet</h4>
+        <p className="text-gray-600 mb-6">Start by browsing opportunities and submitting proposals.</p>
+        <button className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+          Browse Opportunities
+        </button>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
-const MessagesView = () => (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-    <h3 className="text-lg font-semibold text-gray-900 mb-4">Messages</h3>
-    <p className="text-gray-600 mb-6">Connect with peers, mentors, and recruiters.</p>
-    
-    <div className="text-center py-12">
-      <MessageSquare className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-      <h4 className="text-lg font-medium text-gray-900 mb-2">No Messages</h4>
-      <p className="text-gray-600">Start a conversation by applying to projects!</p>
+const OpportunitiesView = () => {
+  return (
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Opportunities</h3>
+        <p className="text-gray-600 mb-6">Browse internships, freelance projects, and job openings.</p>
+        
+        <div className="flex flex-wrap gap-4 mb-6">
+          <button className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">All</button>
+          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">Web Development</button>
+          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">Design</button>
+          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">Data Science</button>
+          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">Mobile Development</button>
+        </div>
+        
+        <div className="space-y-4">
+          {[1,2,3,4].map((i) => (
+            <OpportunityCard
+              key={i}
+              title={`Amazing Project Opportunity ${i}`}
+              company="Tech Company"
+              location="Remote"
+              budget="₹10,000 - ₹20,000"
+              tags={['React', 'Node.js', 'Design']}
+              postedTime={`${i} hours ago`}
+            />
+          ))}
+        </div>
+      </div>
     </div>
-  </div>
-)
+  )
+}
+
+const EventsView = () => {
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Events & Workshops</h3>
+      <p className="text-gray-600 mb-6">Join hackathons, workshops, and networking events.</p>
+      
+      <div className="text-center py-12">
+        <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+        <h4 className="text-lg font-medium text-gray-900 mb-2">No Upcoming Events</h4>
+        <p className="text-gray-600">Check back soon for exciting events and workshops!</p>
+      </div>
+    </div>
+  )
+}
+
+const MessagesView = () => {
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Messages</h3>
+      <p className="text-gray-600 mb-6">Connect with peers, mentors, and recruiters.</p>
+      
+      <div className="text-center py-12">
+        <MessageSquare className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+        <h4 className="text-lg font-medium text-gray-900 mb-2">No Messages</h4>
+        <p className="text-gray-600">Start a conversation by applying to projects!</p>
+      </div>
+    </div>
+  )
+}
 
 // Reusable Components
-const StatCard = ({ title, value, icon, bgColor, trend, trendColor = "text-gray-500" }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-    <div className="flex items-center">
-      <div className={`flex-shrink-0 p-3 ${bgColor} rounded-xl`}>
+const StatCard = ({ title, value, icon, bgColor, trend, trendColor = "text-gray-500" }) => {
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+      <div className="flex items-center">
+        <div className={`flex-shrink-0 p-3 ${bgColor} rounded-xl`}>
+          {icon}
+        </div>
+        <div className="ml-4">
+          <p className="text-sm font-medium text-gray-600">{title}</p>
+          <p className="text-2xl font-bold text-gray-900">{value}</p>
+          <p className={`text-xs ${trendColor} font-medium`}>{trend}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const QuickActionCard = ({ title, description, icon, bgColor, hoverColor = "hover:border-blue-400 hover:bg-blue-50" }) => {
+  return (
+    <button
+      className={`text-left p-6 border-2 border-dashed border-gray-300 rounded-xl ${hoverColor} transition-colors group`}
+    >
+      <div className={`inline-flex p-3 ${bgColor} rounded-xl mb-4 group-hover:scale-110 transition-transform`}>
         {icon}
       </div>
-      <div className="ml-4">
-        <p className="text-sm font-medium text-gray-600">{title}</p>
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
-        <p className={`text-xs ${trendColor} font-medium`}>{trend}</p>
-      </div>
-    </div>
-  </div>
-)
-
-const QuickActionCard = ({ title, description, icon, bgColor, hoverColor = "hover:border-blue-400 hover:bg-blue-50" }) => (
-  <button
-    className={`text-left p-6 border-2 border-dashed border-gray-300 rounded-xl ${hoverColor} transition-colors group`}
-  >
-    <div className={`inline-flex p-3 ${bgColor} rounded-xl mb-4 group-hover:scale-110 transition-transform`}>
-      {icon}
-    </div>
-    <h4 className="text-sm font-medium text-gray-900 mb-1">{title}</h4>
-    <p className="text-xs text-gray-500">{description}</p>
-  </button>
-)
-
-const OpportunityCard = ({ title, company, location, budget, tags, postedTime }) => (
-  <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
-    <div className="flex justify-between items-start mb-3">
-      <div>
-        <h4 className="text-lg font-semibold text-gray-900 mb-1">{title}</h4>
-        <p className="text-sm text-gray-600">{company} • {location}</p>
-      </div>
-      <span className="text-sm text-gray-500">{postedTime}</span>
-    </div>
-    
-    <div className="flex items-center justify-between mb-3">
-      <span className="text-lg font-bold text-green-600">{budget}</span>
-      <div className="flex flex-wrap gap-1">
-        {tags.slice(0, 3).map((tag) => (
-          <span key={tag} className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
-            {tag}
-          </span>
-        ))}
-      </div>
-    </div>
-    
-    <button className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-      Apply Now
+      <h4 className="text-sm font-medium text-gray-900 mb-1">{title}</h4>
+      <p className="text-xs text-gray-500">{description}</p>
     </button>
-  </div>
-)
+  )
+}
+
+const OpportunityCard = ({ title, company, location, budget, tags, postedTime }) => {
+  return (
+    <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
+      <div className="flex justify-between items-start mb-3">
+        <div>
+          <h4 className="text-lg font-semibold text-gray-900 mb-1">{title}</h4>
+          <p className="text-sm text-gray-600">{company} • {location}</p>
+        </div>
+        <span className="text-sm text-gray-500">{postedTime}</span>
+      </div>
+      
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-lg font-bold text-green-600">{budget}</span>
+        <div className="flex flex-wrap gap-1">
+          {tags.slice(0, 3).map((tag) => (
+            <span key={tag} className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+      
+      <button className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+        Apply Now
+      </button>
+    </div>
+  )
+}
 
 export default Dashboard
