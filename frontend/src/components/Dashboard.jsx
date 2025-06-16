@@ -256,33 +256,54 @@ const renderActiveTabContent = (activeTab, profile, user) => {
 }
 
 // Dashboard Home Component
-const DashboardHome = ({ profile, user }) => (
-  <div className="space-y-8">
-    {/* Welcome Section */}
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">
-        Welcome back, {profile?.displayName?.split(' ')[0] || user?.displayName?.split(' ')[0] || 'Student'}! 👋
-      </h2>
-      <p className="text-gray-600 mb-4">
-        Ready to showcase your talents and find amazing opportunities on SkillLance?
-      </p>
-      <div className="flex items-center space-x-6 text-sm">
+const DashboardHome = ({ profile, user }) => (  <div className="space-y-6">
+    {/* Welcome Section - Enhanced Professional Design */}
+    <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white shadow-lg">
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold mb-2">
+            Welcome back, {profile?.displayName?.split(' ')[0] || user?.displayName?.split(' ')[0] || 'Student'}! 👋
+          </h2>
+          <p className="text-blue-100 mb-4">
+            Ready to earn with your skills? {profile?.completedTasks || 0} projects completed so far.
+          </p>
+          
+          {/* Profile Completion Bar */}
+          <div className="bg-white/20 rounded-full h-2 mb-3">
+            <div className="bg-white rounded-full h-2 transition-all duration-300" style={{width: `${calculateProfileCompletion(profile, user)}%`}}></div>
+          </div>
+          <p className="text-xs text-blue-100">
+            Profile {calculateProfileCompletion(profile, user)}% complete
+          </p>
+        </div>
+        
+        <div className="ml-6">
+          <button className="bg-white text-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+            Complete Profile
+          </button>
+        </div>
+      </div>
+      
+      {/* User Status Bar */}
+      <div className="flex items-center space-x-6 mt-4 pt-4 border-t border-white/20 text-sm">
         <div className="flex items-center">
-          <span className="text-gray-500">Email:</span>
-          <span className="ml-2 font-medium text-gray-900">{user?.email}</span>
+          <span className="text-blue-100">Email:</span>
+          <span className="ml-2 font-medium">{user?.email}</span>
           {user?.emailVerified ? (
-            <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+            <span className="ml-2 px-2 py-1 bg-green-500 text-white rounded-full text-xs font-medium">
               ✓ Verified
             </span>
           ) : (
-            <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
+            <span className="ml-2 px-2 py-1 bg-yellow-500 text-white rounded-full text-xs font-medium">
               ⚠ Unverified
             </span>
           )}
         </div>
       </div>
-    </div>    {/* Stats Grid */}
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+    </div>
+
+    {/* Stats Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
       <StatCard
         title="Trust Score"
         value={profile?.trustScore || 100}
