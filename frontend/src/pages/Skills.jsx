@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Award, Code, Design, BookOpen } from 'lucide-react'
+import { ArrowLeft, Award, Code, Palette, BookOpen } from 'lucide-react'
 
 const Skills = () => {
   return (
@@ -34,7 +34,7 @@ const Skills = () => {
 
             <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Design className="w-8 h-8 text-purple-600" />
+                <Palette className="w-8 h-8 text-purple-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Design</h3>
               <p className="text-gray-600 mb-4">UI/UX, Graphics, Video</p>

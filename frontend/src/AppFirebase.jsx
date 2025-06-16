@@ -9,6 +9,8 @@ import './index.css';
 import FirebaseLogin from './pages/FirebaseLogin';
 import Dashboard from './components/Dashboard';
 import AuthDebug from './components/AuthDebug';
+import AuthDebugSimple from './components/AuthDebugSimple';
+import LoadingSpinner from './components/LoadingSpinner';
 
 // Other Components
 import About from './pages/About';
@@ -32,6 +34,7 @@ function App() {
       <AuthProvider>
         <Router>
           <AppContent />
+          <AuthDebugSimple />
         </Router>
       </AuthProvider>
     );
@@ -69,16 +72,7 @@ function AppContent() {
   // Show loading while checking authentication
   if (status === AUTH_STATES.LOADING) {
     console.log('🔄 Showing loading screen...');
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl mb-6">
-            <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-          </div>
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">SkillLance</h2>
-          <p className="text-gray-600">Loading your account...</p>
-        </div>
-      </div>    );
+    return <LoadingSpinner />;
   }
   
   // Show Firebase login for unauthenticated users or email verification required

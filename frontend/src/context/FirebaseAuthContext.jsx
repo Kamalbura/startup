@@ -125,13 +125,20 @@ export function AuthProvider({ children }) {
       const unsubscribe = firebaseAuthService.onAuthStateChange(async (user) => {
         console.log('🔥 Auth state changed:', user ? 'User logged in' : 'No user');
         
+        // Set loading state immediately
+        dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
+        
         if (user) {
           try {
             console.log('🔥 Fetching user profile for:', user.uid);
             // Get user profile from Firestore
             const profile = await firebaseAuthService.getUserProfile(user.uid);
             console.log('🔥 User profile:', profile);
-              if (!user.emailVerified) {
+            
+            // Add a small delay to ensure loading screen is visible (200ms)
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            if (!user.emailVerified) {
               console.log('🔥 Email verification required, but allowing for development');
               // For development, allow unverified emails
               if (!profile?.displayName && !user.displayName) {
