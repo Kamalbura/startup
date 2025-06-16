@@ -1,11 +1,15 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Shield, Zap, Users, Star, TrendingUp } from 'lucide-react'
-import anime from 'animejs'
+// import anime from 'animejs' // Temporarily disabled
 
 const Landing = () => {
   useEffect(() => {
-    // Hero animation
+    // Hero animation - temporarily disabled
+    console.log('Landing page loaded - animations disabled for now')
+    
+    // TODO: Re-enable animations after fixing animejs
+    /*
     anime({
       targets: '.hero-title',
       translateY: [50, 0],
@@ -41,6 +45,7 @@ const Landing = () => {
       delay: anime.stagger(100, {start: 600}),
       easing: 'easeOutExpo'
     })
+    */
   }, [])
 
   return (
@@ -48,10 +53,9 @@ const Landing = () => {
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-sm border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+          <div className="flex justify-between items-center h-16">            <div className="flex items-center">
               <div className="font-karma font-bold text-2xl text-gradient">
-                CampusKarma
+                SkillLance
               </div>
             </div>
             <div className="hidden md:flex items-center space-x-8">
@@ -61,7 +65,7 @@ const Landing = () => {
               <a href="#about" className="text-gray-600 hover:text-karma-600 transition-colors">
                 About
               </a>
-              <Link to="/auth" className="btn-karma">
+              <Link to="/login-otp" className="btn-karma">
                 Get Started
               </Link>
             </div>
@@ -72,21 +76,20 @@ const Landing = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h1 className="hero-title text-5xl md:text-7xl font-karma font-bold text-gray-900 mb-6">
+          <div className="text-center">            <h1 className="hero-title text-5xl md:text-7xl font-karma font-bold text-gray-900 mb-6">
               Turn Your Skills Into{' '}
-              <span className="text-gradient">CampusKarma</span>
+              <span className="text-gradient">SkillLance</span>
             </h1>
             <p className="hero-subtitle text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
               India's first trust-based student skill economy. 
               Earn real money, build verified reputation, and connect with peers across campuses.
             </p>
             <div className="hero-cta flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/auth" className="btn-karma text-lg px-8 py-3 inline-flex items-center">
+              <Link to="/login-otp" className="btn-karma text-lg px-8 py-3 inline-flex items-center">
                 Start Earning
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
-              <Link to="/auth" className="btn-karma-outline text-lg px-8 py-3">
+              <Link to="/login" className="btn-karma-outline text-lg px-8 py-3">
                 Post a Task
               </Link>
             </div>
@@ -175,8 +178,8 @@ const Landing = () => {
           <p className="text-xl text-white/90 mb-8">
             Join thousands of students already earning and building their reputation
           </p>
-          <Link to="/auth" className="btn-karma bg-white text-karma-600 hover:bg-gray-100 text-lg px-8 py-3 inline-flex items-center">
-            Join CampusKarma
+          <Link to="/login-otp" className="btn-karma bg-white text-karma-600 hover:bg-gray-100 text-lg px-8 py-3 inline-flex items-center">
+            Join SkillLance
             <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
         </div>
@@ -187,7 +190,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <div className="font-karma font-bold text-2xl mb-4">CampusKarma</div>
+              <div className="font-karma font-bold text-2xl mb-4">SkillLance</div>
               <p className="text-gray-400">
                 Empowering India's student economy, one skill at a time.
               </p>
@@ -218,7 +221,7 @@ const Landing = () => {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 CampusKarma. Made with ❤️ for India's student community.</p>
+            <p>&copy; 2024 SkillLance. Made with ❤️ for India's student community.</p>
           </div>
         </div>
       </footer>
