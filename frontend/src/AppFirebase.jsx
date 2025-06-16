@@ -9,7 +9,6 @@ import './index.css';
 import FirebaseLogin from './pages/FirebaseLogin';
 import Dashboard from './components/Dashboard';
 import AuthDebug from './components/AuthDebug';
-import AuthDebugSimple from './components/AuthDebugSimple';
 import LoadingSpinner from './components/LoadingSpinner';
 
 // Other Components
@@ -34,7 +33,6 @@ function App() {
       <AuthProvider>
         <Router>
           <AppContent />
-          <AuthDebugSimple />
         </Router>
       </AuthProvider>
     );
@@ -86,23 +84,20 @@ function AppContent() {
   if (status === AUTH_STATES.PROFILE_INCOMPLETE) {
     // Skip profile completion for now and go to dashboard
     // Users can complete their profile from dashboard settings
-    console.log('🔥 Profile incomplete, redirecting to dashboard');
-    return (
-      <Routes>
+    console.log('🔥 Profile incomplete, redirecting to dashboard');    return (      <Routes>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     );
   }
+  
   // Main app routes for authenticated users
   if (status === AUTH_STATES.AUTHENTICATED) {
     console.log('✅ User is authenticated, showing main app...');
     return (
       <Routes>
         {/* Authenticated user default route */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        
-        {/* Dashboard and main app routes */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />        {/* Dashboard and main app routes */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/post-task" element={<PostTask />} />
         <Route path="/skills" element={<Skills />} />

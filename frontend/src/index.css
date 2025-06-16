@@ -1,77 +1,59 @@
-/* SkillLance v1.0.0.0 - TailwindCSS + Premium Animations */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Variables */
-:root {
-  --skilllance-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  --trust-glow: 0 0 20px rgba(139, 92, 246, 0.3);
-}
-
-/* Custom Base Styles */
 @layer base {
   * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    @apply border-gray-200;
   }
-
-  html {
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    line-height: 1.5;
-    -webkit-text-size-adjust: 100%;
-  }
-
+  
   body {
-    margin: 0;
-    min-height: 100vh;
-    background-color: #ffffff;
-    color: #1f2937;
-    font-feature-settings: 'rlig' 1, 'calt' 1;
+    @apply bg-white text-gray-900 font-campus;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* Custom Component Styles */
 @layer components {
-  .btn-primary {
-    @apply bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200;
+  /* CampusKarma Custom Components */
+  .btn-karma {
+    @apply bg-karma-500 hover:bg-karma-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105;
   }
   
-  .btn-secondary {
-    @apply bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition-all duration-200;
+  .btn-karma-outline {
+    @apply border-2 border-karma-500 text-karma-500 hover:bg-karma-500 hover:text-white font-medium py-2 px-4 rounded-lg transition-all duration-200;
   }
   
-  .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+  .card-trust {
+    @apply bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 p-6;
   }
   
-  .input-field {
-    @apply w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-0 transition-colors;
+  .karma-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-karma-100 text-karma-800;
   }
   
-  .karma-gradient {
-    background: var(--karma-gradient);
+  .trust-bar {
+    @apply w-full bg-gray-200 rounded-full h-2;
   }
-
-  .trust-glow {
-    box-shadow: var(--trust-glow);
+  
+  .trust-fill {
+    @apply bg-trust-500 h-2 rounded-full transition-all duration-500;
   }
-
-  .glass-effect {
-    @apply backdrop-blur-lg bg-white/80 border border-white/20;
+  
+  .campus-gradient {
+    @apply bg-gradient-to-r from-karma-500 via-campus-500 to-trust-500;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-karma-600 via-campus-600 to-trust-600 bg-clip-text text-transparent;
+  }
+  
+  .glass-morphism {
+    @apply backdrop-blur-sm bg-white/80 border border-white/20;
   }
 }
 
-/* Custom Utility Styles */
 @layer utilities {
-  .text-gradient {
-    @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
-  }
-  
-  .bg-gradient-karma {
-    @apply bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50;
+  .text-balance {
+    text-wrap: balance;
   }
 }
