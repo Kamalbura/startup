@@ -1,11 +1,11 @@
 // SkillLance - Professional Student Talent Platform Dashboard
 // Purpose: Modern sidebar-based dashboard for skill showcasing and opportunities
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useAuth, useAuthActions } from '../context/FirebaseAuthContext'
 import { 
   Home, User, Award, Briefcase, Calendar, MessageSquare, 
-  Settings, LogOut, Bell, Search, Plus,
+  LogOut, Bell, Search, Plus,
   Star, Trophy, DollarSign, Target
 } from 'lucide-react'
 
@@ -22,7 +22,7 @@ const Dashboard = () => {
   const { signOut } = useAuthActions()
   const [activeTab, setActiveTab] = useState('dashboard')
   const [showNotifications, setShowNotifications] = useState(false)
-  const [notifications] = useState([
+  const [notifications, setNotifications] = useState([
     { id: 1, type: 'project', message: 'New project matching your skills', time: '2 min ago', unread: true },
     { id: 2, type: 'message', message: 'Message from TechStart Inc.', time: '1 hour ago', unread: true },
     { id: 3, type: 'event', message: 'Upcoming: React Workshop', time: '3 hours ago', unread: false },
@@ -34,6 +34,22 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Logout error:', error)
     }
+  }
+
+  const markNotificationAsRead = (notificationId) => {
+    setNotifications(prev => 
+      prev.map(notification => 
+        notification.id === notificationId 
+          ? { ...notification, unread: false }
+          : notification
+      )
+    )
+  }
+
+  const markAllNotificationsAsRead = () => {
+    setNotifications(prev => 
+      prev.map(notification => ({ ...notification, unread: false }))
+    )
   }
 
   // Navigation items for sidebar
@@ -150,22 +166,47 @@ const Dashboard = () => {
                     {notifications.some(n => n.unread) && (
                       <span className="absolute top-1 right-1 block h-2 w-2 bg-red-400 rounded-full"></span>
                     )}
-                  </button>
-
-                  {/* Notifications Dropdown */}
+                  </button>                  {/* Notifications Dropdown */}
                   {showNotifications && (
                     <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                       <div className="p-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-3">Notifications</h3>
-                        <div className="space-y-3 max-h-64 overflow-y-auto">
+                        <div className="flex justify-between items-center mb-3">
+                          <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+                          {notifications.some(n => n.unread) && (
+                            <button 
+                              onClick={markAllNotificationsAsRead}
+                              className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                            >
+                              Mark all as read
+                            </button>
+                          )}
+                        </div>                        <div className="space-y-3 max-h-64 overflow-y-auto">
                           {notifications.map((notification) => (
-                            <div key={notification.id} className={`p-3 rounded-lg border ${notification.unread ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
-                              <p className="text-sm font-medium text-gray-900">{notification.message}</p>
-                              <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
-                            </div>
+                            <button 
+                              key={notification.id} 
+                              className={`w-full p-3 rounded-lg border text-left cursor-pointer transition-colors ${
+                                notification.unread 
+                                  ? 'bg-blue-50 border-blue-200 hover:bg-blue-100' 
+                                  : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                              }`}
+                              onClick={() => markNotificationAsRead(notification.id)}
+                            >
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-gray-900">{notification.message}</p>
+                                  <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
+                                </div>
+                                {notification.unread && (
+                                  <div className="ml-2 w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                                )}
+                              </div>
+                            </button>
                           ))}
                         </div>
-                        <button className="w-full mt-3 py-2 text-sm text-blue-600 hover:text-blue-700 font-medium">
+                        <button 
+                          onClick={() => setShowNotifications(false)}
+                          className="w-full mt-3 py-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                        >
                           View All Notifications
                         </button>
                       </div>

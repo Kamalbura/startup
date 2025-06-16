@@ -63,8 +63,7 @@ export default {
           '50%': { transform: 'translateY(-10px)' },
         }
       }
-    },  },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
+    },
+  },
+  plugins: [],
 }
