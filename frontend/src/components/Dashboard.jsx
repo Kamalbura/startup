@@ -3,9 +3,10 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth, useAuthActions } from '../context/FirebaseAuthContext'
+import AnonymousRequests from './AnonymousRequests'
 import { 
   Home, User, Award, Briefcase, Calendar, MessageSquare, 
-  LogOut, Bell, Search, Plus,
+  LogOut, Bell, Search, Plus, Shield,
   Star, Trophy, DollarSign, Target
 } from 'lucide-react'
 
@@ -55,6 +56,7 @@ const Dashboard = () => {
   // Navigation items for sidebar
   const navigation = [
     { id: 'dashboard', name: 'Dashboard', icon: Home, current: activeTab === 'dashboard' },
+    { id: 'anonymous', name: 'Anonymous Help', icon: Shield, current: activeTab === 'anonymous' },
     { id: 'profile', name: 'My Profile', icon: User, current: activeTab === 'profile' },
     { id: 'skills', name: 'Skills', icon: Award, current: activeTab === 'skills' },
     { id: 'projects', name: 'Projects', icon: Briefcase, current: activeTab === 'projects' },
@@ -142,7 +144,9 @@ const Dashboard = () => {
               {/* Page Title */}
               <div className="flex items-center">
                 <h1 className="text-2xl font-semibold text-gray-900 capitalize">
-                  {activeTab === 'dashboard' ? 'Welcome to SkillLance' : activeTab}
+                  {activeTab === 'dashboard' ? 'Welcome to SkillLance' : 
+                   activeTab === 'anonymous' ? 'Anonymous Help' : 
+                   activeTab}
                 </h1>
               </div>
 
@@ -238,6 +242,8 @@ const renderActiveTabContent = (activeTab, profile, user) => {
   switch (activeTab) {
     case 'dashboard':
       return <DashboardHome profile={profile} user={user} />
+    case 'anonymous':
+      return <AnonymousRequests />
     case 'profile':
       return <ProfileView profile={profile} user={user} />
     case 'skills':

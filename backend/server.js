@@ -1,4 +1,4 @@
-// SkillLance Server - Main Entry Point
+// CampusKarma Server - Main Entry Point
 // Purpose: Express server with security, middleware, and route configuration
 
 import express from 'express'
@@ -13,19 +13,13 @@ import dotenv from 'dotenv'
 
 // Import configurations and services
 import db from './config/database.js'
-// import authService from './utils/authService.js' // Temporarily disabled
-
-// Import routes
-import authRoutes from './routes/auth.js'
-import userRoutes from './routes/users.js'
-import taskRoutes from './routes/tasks.js'
-import skillRoutes from './routes/skills.js'
-import firebaseAuthRoutes from './routes/firebaseAuth.js'
+import authService from './utils/authService.js'
 
 // Import middleware
 import { authErrorHandler } from './middleware/auth.js'
 
-// Import route handlers (we'll create these next)
+// Import route handlers
+import anonymousRoutes from './routes/anonymousRequests.js'
 // import authRoutes from './routes/auth.js'
 // import userRoutes from './routes/users.js'
 // import taskRoutes from './routes/tasks.js'
@@ -122,19 +116,37 @@ class CampusKarmaServer {
         userAgent: req.get('User-Agent')
       })
       next()
-    })
-
-    // Health check endpoint
-    this.app.get('/health', (req, res) => {
-      const dbStatus = db.getConnectionStatus()
-      res.json({
-        success: true,
-        message: 'CampusKarma API is running',
-        timestamp: new Date().toISOString(),
-        version: process.env.API_VERSION || 'v1',
-        database: dbStatus,
-        environment: process.env.NODE_ENV
-      })
+    })    // Enhanced health check endpoint
+    this.app.get('/health', async (req, res) => {
+      try {
+        const dbHealth = db.getHealthStatus()
+        const dbStats = this.isConnected ? await db.getDatabaseStats().catch(() => null) : null
+        
+        res.json({
+          success: true,
+          message: 'SkillLance API is running',
+          timestamp: new Date().toISOString(),
+          version: process.env.API_VERSION || 'v1',
+          database: {
+            ...dbHealth,
+            stats: dbStats
+          },
+          environment: process.env.NODE_ENV,
+          uptime: process.uptime(),
+          memory: process.memoryUsage(),
+          server: {
+            port: this.port,
+            cors: process.env.CORS_ORIGIN
+          }
+        })
+      } catch (error) {
+        logger.error('Health check error:', error)
+        res.status(500).json({
+          success: false,
+          message: 'Health check failed',
+          error: error.message
+        })
+      }
     })
   }
 
@@ -150,21 +162,21 @@ class CampusKarmaServer {
         message: '🎯 Welcome to CampusKarma API',
         tagline: 'Turn Your Skills Into Karma',
         version: apiVersion,
-        documentation: `${req.protocol}://${req.get('host')}${apiPrefix}/docs`,        endpoints: {
+        documentation: `${req.protocol}://${req.get('host')}${apiPrefix}/docs`,
+        endpoints: {
           health: '/health',
           auth: `${apiPrefix}/auth`,
-          firebaseAuth: `${apiPrefix}/firebase-auth`,
           users: `${apiPrefix}/users`,
           tasks: `${apiPrefix}/tasks`,
           skills: `${apiPrefix}/skills`
         }
       })
     })    // API Routes
-    this.app.use(`${apiPrefix}/auth`, authRoutes)
-    this.app.use(`${apiPrefix}/firebase-auth`, firebaseAuthRoutes)
-    this.app.use(`${apiPrefix}/users`, userRoutes)
-    this.app.use(`${apiPrefix}/tasks`, taskRoutes)
-    this.app.use(`${apiPrefix}/skills`, skillRoutes)
+    this.app.use(`${apiPrefix}/anonymous`, anonymousRoutes)
+    // this.app.use(`${apiPrefix}/auth`, authRoutes)
+    // this.app.use(`${apiPrefix}/users`, userRoutes)
+    // this.app.use(`${apiPrefix}/tasks`, taskRoutes)
+    // this.app.use(`${apiPrefix}/skills`, skillRoutes)
 
     // Temporary route for testing
     this.app.get(`${apiPrefix}/test`, (req, res) => {
@@ -183,8 +195,10 @@ class CampusKarmaServer {
         endpoint: req.originalUrl
       })
     })
-  }  initializeSocketIO() {
-    // Socket.IO authentication middleware (simplified for now)
+  }
+
+  initializeSocketIO() {
+    // Socket.IO authentication middleware
     this.io.use(async (socket, next) => {
       try {
         const token = socket.handshake.auth.token
@@ -192,13 +206,20 @@ class CampusKarmaServer {
           return next(new Error('Authentication error'))
         }
 
-        // Simplified token verification for now
-        socket.userId = 'temp-user-id'
-        socket.userEmail = 'temp-email'
+        const decoded = authService.verifyToken(token)
+        const { User } = await import('./models/index.js')
+        const user = await User.findById(decoded.userId)
+        
+        if (!user) {
+          return next(new Error('User not found'))
+        }
+
+        socket.userId = user._id.toString()
+        socket.userEmail = user.email
         next()
       } catch (error) {
         logger.error('Socket authentication error:', error)
-        next(new Error('Authentication failed'))
+        next(new Error('Authentication error'))
       }
     })
 
@@ -295,28 +316,50 @@ class CampusKarmaServer {
         process.exit(0)
       })
     })
-  }
-
-  async start() {
+  }  async start() {
     try {
-      // Connect to database
-      await db.connect()
+      // Connect to enhanced database
+      logger.info('🚀 Starting SkillLance Server...')
+      
+      let dbHealth = null
+      try {
+        dbHealth = await db.connect()
+        
+        // Start health monitoring
+        logger.info('📊 Starting database health monitoring...')
+        if (db.startHealthMonitoring) {
+          db.startHealthMonitoring(60000) // Monitor every minute
+        }
+      } catch (dbError) {
+        logger.error('⚠️ Database connection failed, starting server without database:', dbError.message)
+        dbHealth = { status: 'disconnected', error: dbError.message }
+      }
       
       // Start server
       this.server.listen(this.port, () => {
-        logger.info(`🚀 CampusKarma Server running on port ${this.port}`)
+        logger.info(`🎉 SkillLance Server running on port ${this.port}`)
         logger.info(`📱 Environment: ${process.env.NODE_ENV}`)
-        logger.info(`🗄️  Database: ${db.getConnectionStatus().name}`)
+        logger.info(`🗄️  Database: ${dbHealth?.mongoose?.database || 'skilllance'}`)
+        logger.info(`⚡ Database Status: ${dbHealth?.status || 'unknown'}`)
         logger.info(`🌐 CORS Origin: ${process.env.CORS_ORIGIN}`)
-        logger.info(`⚡ Socket.IO enabled for real-time features`)
+        logger.info(`🔥 Socket.IO enabled for real-time features`)
         
         if (process.env.NODE_ENV === 'development') {
           logger.info(`📖 API Documentation: http://localhost:${this.port}/api/v1`)
           logger.info(`🔧 Health Check: http://localhost:${this.port}/health`)
+          logger.info(`🎯 Anonymous Requests: http://localhost:${this.port}/api/v1/anonymous`)
+        }
+        
+        logger.info('✅ SkillLance Backend Ready!')
+        
+        if (!dbHealth || dbHealth.status !== 'healthy') {
+          logger.warn('⚠️ Note: Database is not connected. Some features may be limited.')
+          logger.warn('💡 Check your MongoDB Atlas connection and try restarting.')
         }
       })
     } catch (error) {
-      logger.error('Failed to start server:', error)
+      logger.error('❌ Failed to start server:', error)
+      logger.error('💡 Check your MongoDB Atlas connection and environment variables')
       process.exit(1)
     }
   }

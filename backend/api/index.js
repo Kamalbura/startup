@@ -1,4 +1,4 @@
-// Vercel Serverless Function Entry Point for CampusKarma API
+// Vercel Serverless Function Entry Point for SkillLance API - Week 4 Enhanced
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
@@ -7,28 +7,34 @@ import rateLimit from 'express-rate-limit'
 import winston from 'winston'
 import dotenv from 'dotenv'
 
-// Import configurations and services
-import connectDB from './config/database.js'
+// Import enhanced database manager
+import db from './config/database.js'
 
 // Import routes
-import authRoutes from './routes/auth.js'
+import anonymousRoutes from './routes/anonymousRequests.js'
+// TODO: import authRoutes from './routes/auth.js'
+// TODO: import userRoutes from './routes/users.js'
 
 // Import middleware
-import { authErrorHandler } from './middleware/auth.js'
+// TODO: import { authErrorHandler } from './middleware/auth.js'
 
 // Configure environment
 dotenv.config()
 
-// Configure Winston logger for Vercel
+// Enhanced Winston logger for production
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: winston.format.combine(
     winston.format.timestamp(),
+    winston.format.errors({ stack: true }),
     winston.format.json()
   ),
   transports: [
     new winston.transports.Console({
-      format: winston.format.simple()
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      )
     })
   ]
 })
@@ -36,25 +42,28 @@ const logger = winston.createLogger({
 // Create Express app
 const app = express()
 
-// Trust proxy (important for Vercel)
+// Trust proxy (critical for Vercel deployment)
 app.set('trust proxy', 1)
 
-// Connect to database once
+// Database connection management for serverless
 let dbConnected = false
 const ensureDBConnection = async () => {
   if (!dbConnected) {
     try {
-      await connectDB()
+      logger.info('🔄 Establishing database connection...')
+      await db.connect()
       dbConnected = true
-      logger.info('Database connected successfully')
+      logger.info('✅ Database connection established')
+      return true
     } catch (error) {
-      logger.error('Database connection failed:', error)
-      throw error
+      logger.error('❌ Database connection failed:', error.message)
+      return false
     }
   }
+  return true
 }
 
-// Security middleware
+// Enhanced security middleware
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -78,8 +87,11 @@ const corsOptions = {
     ? [
         'https://campuskarma.vercel.app',
         'https://campuskarma-frontend.vercel.app',
-        'https://campuskarma.burakamal.site'
-      ]
+        'https://campuskarma.burakamal.site',
+        'https://skilllance.vercel.app',
+        'https://skilllance-frontend.vercel.app',
+        process.env.FRONTEND_URL // Allow dynamic frontend URL from env var
+      ].filter(Boolean) // Remove any undefined/null values
     : ['http://localhost:3000', 'http://localhost:5173'],
   credentials: true,
   optionsSuccessStatus: 200,
@@ -121,21 +133,22 @@ app.use((req, res, next) => {
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
   try {
-    await connectDB()
-    const dbStatus = db.getConnectionStatus()
+    await ensureDBConnection()
+    const dbHealth = await checkDBHealth()
+    
     res.json({
       success: true,
-      message: 'CampusKarma API is running',
+      message: 'SkillLance API is running',
       timestamp: new Date().toISOString(),
       version: process.env.API_VERSION || 'v1',
-      database: dbStatus,
+      database: dbHealth,
       environment: process.env.NODE_ENV,
       vercel: true
     })
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Database connection failed',
+      message: 'Service health check failed',
       error: error.message
     })
   }
@@ -180,7 +193,8 @@ app.use(apiPrefix, async (req, res, next) => {
 })
 
 // API Routes
-app.use(`${apiPrefix}/auth`, authRoutes)
+// app.use(`${apiPrefix}/auth`, authRoutes)  // TODO: Add auth routes
+app.use(`${apiPrefix}/anonymous`, anonymousRoutes)
 
 // Test endpoint
 app.get(`${apiPrefix}/test`, (req, res) => {
@@ -203,7 +217,7 @@ app.use(`${apiPrefix}/*`, (req, res) => {
 })
 
 // Error handling middleware
-app.use(authErrorHandler)
+// app.use(authErrorHandler)  // TODO: Add auth error handler
 
 // Global error handler
 app.use((error, req, res, next) => {

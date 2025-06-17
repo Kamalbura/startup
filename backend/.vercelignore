@@ -1,0 +1,33 @@
+# Test files
+test-*.js
+check-*.js
+setup-*.js
+switch-*.js
+
+# Development files
+dump/
+node_modules/
+.env
+.env.example
+
+# Exclude all root-level JS files except API directory
+server.js
+*.js
+!api/
+
+# Exclude all directories except api/
+routes/
+models/
+middleware/
+config/
+utils/
+controllers/
+services/
+
+# Other files that shouldn't be deployed
+*.log
+*.tmp
+.DS_Store
+README.md
+package-lock.json
+yarn.lock
