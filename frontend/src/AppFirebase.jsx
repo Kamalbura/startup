@@ -8,6 +8,7 @@ import './index.css';
 // Firebase Components
 import FirebaseLogin from './pages/FirebaseLogin';
 import DashboardModern from './components/dashboard/DashboardModern';
+import DashboardPage from './pages/Dashboard';
 import AuthDebug from './components/AuthDebug';
 import LoadingSpinner from './components/LoadingSpinner';
 
@@ -17,6 +18,7 @@ import Disputes from './pages/Disputes';
 import PostTask from './pages/PostTask';
 import Skills from './pages/Skills';
 import CSSTest from './components/CSSTest';
+import ComponentTest from './pages/ComponentTest';
 
 // Firebase Auth Context
 import { AuthProvider, useAuth, AUTH_STATES } from './context/FirebaseAuthContext';
@@ -100,6 +102,7 @@ function AppContent() {
         {/* Authenticated user default route */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />        {/* Dashboard and main app routes */}
         <Route path="/dashboard" element={<DashboardModern />} />
+        <Route path="/dashboard-new" element={<DashboardPage />} />
         <Route path="/post-task" element={<PostTask />} />
         <Route path="/skills" element={<Skills />} />
         
@@ -110,6 +113,7 @@ function AppContent() {
         {/* Development/testing routes */}
         <Route path="/css-test" element={<CSSTest />} />
         <Route path="/auth-debug" element={<AuthDebug />} />
+        <Route path="/component-test" element={<ComponentTest />} />
         
         {/* Redirect unknown routes to dashboard */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

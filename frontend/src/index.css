@@ -8,43 +8,43 @@
   }
   
   body {
-    @apply bg-white text-gray-900 font-campus;
+    @apply bg-white text-gray-900 font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
 @layer components {
-  /* CampusKarma Custom Components */
-  .btn-karma {
-    @apply bg-karma-500 hover:bg-karma-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105;
+  /* SkillLance Custom Components */
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105;
   }
   
-  .btn-karma-outline {
-    @apply border-2 border-karma-500 text-karma-500 hover:bg-karma-500 hover:text-white font-medium py-2 px-4 rounded-lg transition-all duration-200;
+  .btn-outline {
+    @apply border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white font-medium py-2 px-4 rounded-lg transition-all duration-200;
   }
   
-  .card-trust {
+  .card-modern {
     @apply bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 p-6;
   }
   
-  .karma-badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-karma-100 text-karma-800;
+  .badge-modern {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800;
   }
   
-  .trust-bar {
+  .progress-bar {
     @apply w-full bg-gray-200 rounded-full h-2;
   }
   
-  .trust-fill {
-    @apply bg-trust-500 h-2 rounded-full transition-all duration-500;
+  .progress-fill {
+    @apply bg-primary-500 h-2 rounded-full transition-all duration-500;
   }
   
-  .campus-gradient {
-    @apply bg-gradient-to-r from-karma-500 via-campus-500 to-trust-500;
+  .brand-gradient {
+    @apply bg-gradient-to-r from-primary-500 via-secondary-500 to-accent-500;
   }
   
   .text-gradient {
-    @apply bg-gradient-to-r from-karma-600 via-campus-600 to-trust-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 bg-clip-text text-transparent;
   }
   
   .glass-morphism {
