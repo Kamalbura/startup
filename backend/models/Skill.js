@@ -274,10 +274,12 @@ skillSchema.methods.evaluateQuiz = function(answers) {
     if (question.questionType === 'multiple_choice') {
       const selectedOption = question.options.find(opt => opt.text === answer.selectedOption)
       isCorrect = selectedOption && selectedOption.isCorrect
-    } else if (question.questionType === 'true_false') {
+    } 
+    else if (question.questionType === 'true_false') {
       const selectedOption = question.options.find(opt => opt.text === answer.selectedOption)
       isCorrect = selectedOption && selectedOption.isCorrect
-    } else if (question.questionType === 'short_answer') {
+    }
+     else if (question.questionType === 'short_answer') {
       // Simple text matching (could be enhanced with fuzzy matching)
       isCorrect = answer.textAnswer && 
         answer.textAnswer.toLowerCase().trim() === question.correctAnswer.toLowerCase().trim()

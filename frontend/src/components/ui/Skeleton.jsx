@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
 /**
  * Skeleton Component
@@ -201,10 +201,10 @@ const SkeletonTable = ({
           </div>
         ))}
       </div>
-    </div>
-  )
+    </div>  )
 }
 
+export default Skeleton
 export { 
   Skeleton, 
   SkeletonText, 

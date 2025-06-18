@@ -1,7 +1,7 @@
 // Firebase Configuration for SkillLance
 // Purpose: Initialize Firebase services for authentication and analytics
 
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
@@ -18,7 +18,18 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = (() => {
+  try {
+    return !getApps().length
+      ? initializeApp(firebaseConfig)
+      : getApp();
+  } catch (error) {
+    if (error.code === 'app/duplicate-app') {
+      return getApp();
+    }
+    throw error;
+  }
+})();
 
 // Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app);

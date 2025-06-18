@@ -7,8 +7,7 @@ import './index.css';
 
 // Firebase Components
 import FirebaseLogin from './pages/FirebaseLogin';
-import DashboardModern from './components/dashboard/DashboardModern';
-import DashboardPage from './pages/Dashboard';
+import Dashboard from './components/dashboard/Dashboard';
 import AuthDebug from './components/AuthDebug';
 import LoadingSpinner from './components/LoadingSpinner';
 
@@ -18,7 +17,6 @@ import Disputes from './pages/Disputes';
 import PostTask from './pages/PostTask';
 import Skills from './pages/Skills';
 import CSSTest from './components/CSSTest';
-import ComponentTest from './pages/ComponentTest';
 
 // Firebase Auth Context
 import { AuthProvider, useAuth, AUTH_STATES } from './context/FirebaseAuthContext';
@@ -84,11 +82,10 @@ function AppContent() {
   
   // Show profile completion for incomplete profiles
   if (status === AUTH_STATES.PROFILE_INCOMPLETE) {
-    // Skip profile completion for now and go to dashboard
-    // Users can complete their profile from dashboard settings    console.log('🔥 Profile incomplete, redirecting to dashboard');
+    console.log('🔥 Profile incomplete, redirecting to dashboard');
     return (
       <Routes>
-        <Route path="/dashboard" element={<DashboardModern />} />
+        <Route path="/dashboard" element={<Dashboard variant="enhanced" />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     );
@@ -96,13 +93,16 @@ function AppContent() {
   
   // Main app routes for authenticated users
   if (status === AUTH_STATES.AUTHENTICATED) {
-    console.log('✅ User is authenticated, showing main app...');
     return (
       <Routes>
         {/* Authenticated user default route */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />        {/* Dashboard and main app routes */}
-        <Route path="/dashboard" element={<DashboardModern />} />
-        <Route path="/dashboard-new" element={<DashboardPage />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        
+        {/* Main Dashboard - Clean and Simple */}
+        <Route path="/dashboard" element={<Dashboard variant="simple" />} />
+        <Route path="/dashboard-enhanced" element={<Dashboard variant="enhanced" />} />
+        <Route path="/dashboard-ultimate" element={<Dashboard variant="ultimate" />} />
+        <Route path="/dashboard-classic" element={<Dashboard variant="modern" />} />
         <Route path="/post-task" element={<PostTask />} />
         <Route path="/skills" element={<Skills />} />
         
@@ -110,10 +110,7 @@ function AppContent() {
         <Route path="/about" element={<About />} />
         <Route path="/disputes" element={<Disputes />} />
         
-        {/* Development/testing routes */}
-        <Route path="/css-test" element={<CSSTest />} />
-        <Route path="/auth-debug" element={<AuthDebug />} />
-        <Route path="/component-test" element={<ComponentTest />} />
+        {/* Development/testing routes - removed for production cleanup */}
         
         {/* Redirect unknown routes to dashboard */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -20,9 +20,9 @@ import { authErrorHandler } from './middleware/auth.js'
 
 // Import route handlers
 import anonymousRoutes from './routes/anonymousRequests.js'
-// import authRoutes from './routes/auth.js'
-// import userRoutes from './routes/users.js'
-// import taskRoutes from './routes/tasks.js'
+import authRoutes from './routes/auth.js'
+import userRoutes from './routes/users.js'
+import taskRoutes from './routes/tasks.js'
 // import skillRoutes from './routes/skills.js'
 
 // Load environment variables

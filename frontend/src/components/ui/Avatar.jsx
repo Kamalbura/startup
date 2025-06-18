@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
 /**
  * Avatar Component
@@ -136,9 +136,9 @@ const AvatarGroup = ({
         >
           +{hiddenCount}
         </div>
-      )}
-    </div>
+      )}    </div>
   )
 }
 
+export default Avatar
 export { Avatar, AvatarGroup }

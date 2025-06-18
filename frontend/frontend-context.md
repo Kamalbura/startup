@@ -52,6 +52,26 @@ SkillLance is a **privacy-first student talent platform** where college students
 
 ---
 
+## 🎯 Recent Updates (Batch 5 - Consolidation Complete)
+
+### ✅ Frontend Consolidation (Batch 5)
+- **File Cleanup**: Moved all legacy/test files to `src/dump/` directory
+  - Removed: App.jsx, App.modern.jsx, main.modern.jsx, test-api.js
+  - Moved test components: SimpleDebug, TestApp, FirebaseTestApp, etc.
+  - Moved legacy auth: Auth.jsx, LoginPage.jsx, LoginPageOTP.jsx, etc.
+  - Moved legacy components: Dashboard.jsx, Profile.jsx, Navbar.jsx, etc.
+- **Clean Production Structure**: Only production-ready files remain in `src/`
+- **Fixed Imports**: Updated AppFirebase.jsx to remove broken component references
+- **Working Dev Server**: Successfully running on http://localhost:3000
+
+### ✅ Production-Ready Structure
+- **Entry Point**: `main.jsx` → `AppFirebase.jsx` (Firebase authentication flow)
+- **Dashboard**: `DashboardModern.jsx` (modern dashboard with sidebar navigation)
+- **Authentication**: `FirebaseLogin.jsx` (professional split-layout login)
+- **UI Components**: Complete component library in `src/components/ui/`
+- **Layout System**: Header, Footer, Layout components ready
+- **Context Providers**: Firebase auth context working
+
 ## 🎯 Recent Updates (Batch 3-4 Complete)
 
 ### ✅ UI Components System (Batch 3)
@@ -635,6 +655,56 @@ trackError('api_error', { endpoint: '/api/help-requests' })
 - **Testing Setup**: Unit and integration tests
 - **Performance**: Optimization and monitoring
 - **PWA Features**: Service workers, offline support
+
+---
+
+## Directory Usage Report & Cleanup Plan
+
+This section provides a current snapshot of the `src/` directory, categorizes files as **Used**, **Legacy/Redundant**, or **Needs Consolidation**, and outlines a plan to move unnecessary files into `src/dump/`.
+
+### 1. src/components/ui (All Used)
+- Button.jsx, Input.jsx, Card.jsx, Modal.jsx, Avatar.jsx, Badge.jsx, Skeleton.jsx, LoadingSpinner.jsx
+
+### 2. src/components/layout (All Used)
+- Layout.jsx, Header.jsx, Footer.jsx, index.js
+
+### 3. src/components/common
+- HelpCard.jsx — Used
+
+### 4. src/components/dashboard (All Used)
+- ProjectFeed.jsx, StatsPanel.jsx, WelcomeBox.jsx
+
+### 5. src/components (Needs Cleanup)
+- DashboardBeautiful.jsx — Legacy design prototype → **Move to `src/dump/legacy-ui/`**
+- DashboardProfessional.jsx — Empty/stub → **Move to `src/dump/legacy-ui/`**
+- FirebaseDebug.jsx — Debug component → **Move to `src/dump/debug/`**
+- Navbar.jsx — If unused (Header handles nav), **move to `src/dump/legacy-ui/`**
+- Profile.jsx — If not referenced in routing, **move to `src/dump/legacy-ui/`**
+- TaskFeed.jsx — Confirm usage in Dashboard; if duplicate of ProjectFeed, **move to `src/dump/legacy-ui/`**
+
+### 6. src/pages (All Core Pages Used)
+- Dashboard.jsx, About.jsx, Auth.jsx, Disputes.jsx, FirebaseLogin.jsx, FirebaseLoginBeautiful.jsx, ComponentTest.jsx, Landing.jsx, LoginPage.jsx, LoginPageOTP.jsx, PostTask.jsx, Skills.jsx, VerificationPage.jsx
+
+### 7. src/ (Root-level Files to Dump)
+- main.modern.jsx, main-test.jsx, TestApp.jsx, SimpleDebug.jsx, SimpleDebugApp.jsx, SimpleTest.jsx, FirebaseTestApp.jsx, TestApp.jsx, test-api.js → **Move all to `src/dump/debug/`**
+
+### 8. src/services (Consolidation Required)
+- services/api.js vs lib/api.js — Duplicate responsibility. Keep `src/lib/api.js`, move `src/services/api.js` to `src/dump/legacy-services/`.
+- services/firebase.js — Legacy campus-karma config → **Move to `src/dump/legacy-services/`**
+- services/firebaseAuth.js — Legacy auth service → **Move to `src/dump/legacy-services/`**
+
+### 9. src/utils / src/lib (All Used)
+- `src/utils/helpers.js`, `cn.js`, `firebaseTest.js` — Move `firebaseTest.js` to `src/dump/debug/` if truly only for testing.
+- `src/lib/utils.js`, `api.js`, `firebase.js` — Core
+
+---
+
+**Next Steps:**
+1. Create folders under `src/dump/` for `legacy-ui`, `legacy-services`, and `debug`.
+2. Physically move the identified redundant files into these folders.
+3. Remove from version control or mark as archived.
+4. Update import paths and clean up any broken references.
+5. Document each move here as tasks complete.
 
 ---
 

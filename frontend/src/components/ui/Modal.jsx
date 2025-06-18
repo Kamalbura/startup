@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { Button } from './Button'
 
 const Modal = ({ 
@@ -81,8 +81,8 @@ const Modal = ({
         </div>
       </div>
     </div>,
-    document.body
-  )
+    document.body  )
 }
 
+export default Modal
 export { Modal }

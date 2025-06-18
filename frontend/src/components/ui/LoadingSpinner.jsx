@@ -1,5 +1,5 @@
 import React from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
 const LoadingSpinner = ({ 
   size = 'md', 
@@ -27,8 +27,7 @@ const LoadingSpinner = ({
         sizeClasses[size],
         variantClasses[variant],
         className
-      )}
-      role="status"
+      )}      role="status"
       aria-label="Loading"
       {...props}
     >
@@ -37,4 +36,5 @@ const LoadingSpinner = ({
   )
 }
 
+export default LoadingSpinner
 export { LoadingSpinner }

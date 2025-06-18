@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
 /**
  * Badge Component
@@ -155,4 +155,5 @@ const NumericBadge = ({
   )
 }
 
+export default Badge
 export { Badge, BadgeGroup, NumericBadge }
