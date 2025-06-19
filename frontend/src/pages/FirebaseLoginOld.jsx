@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth, useAuthActions } from '../context/FirebaseAuthContext';
 import { 
   Mail, Lock, Eye, EyeOff, User, AlertCircle, 
-  ArrowRight, Sparkles, GraduationCap, 
+  ArrowRight, Sparkles, GraduationCap, Zap, Shield, 
   Check
 } from 'lucide-react';
 import anime from 'animejs/lib/anime.es.js';
@@ -66,12 +66,11 @@ const FloatingElements = () => {
 export default function SkillLanceLogin() {
   const { error, loading } = useAuth();
   const { signIn, signUp, signInWithGoogle, signInWithMicrosoft, signInWithGitHub, clearError } = useAuthActions();
-    const [isSignUp, setIsSignUp] = useState(false);
+  
+  const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [localError, setLocalError] = useState('');
-  const [isEmailValid, setIsEmailValid] = useState(false);
   const containerRef = useRef(null);
-  const passwordFieldRef = useRef(null);
   
   // Form data
   const [formData, setFormData] = useState({
@@ -92,13 +91,13 @@ export default function SkillLanceLogin() {
       });
     }
   }, []);
+
   // Clear errors when switching modes
   const switchMode = () => {
     setIsSignUp(!isSignUp);
     setLocalError('');
     clearError();
     setFormData({ email: '', password: '', displayName: '' });
-    setIsEmailValid(false);
     
     // Subtle animation on mode switch
     if (containerRef.current) {
@@ -110,6 +109,7 @@ export default function SkillLanceLogin() {
       });
     }
   };
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -118,38 +118,6 @@ export default function SkillLanceLogin() {
     // Clear errors when typing
     if (localError) setLocalError('');
     if (error) clearError();
-
-    // Check email validity and animate password field
-    if (name === 'email') {
-      const emailIsValid = isValidCollegeEmail(value);
-      
-      if (emailIsValid !== isEmailValid) {
-        setIsEmailValid(emailIsValid);
-        
-        // Animate password field appearance/disappearance
-        if (passwordFieldRef.current) {
-          if (emailIsValid) {
-            // Show password field with animation
-            anime({
-              targets: passwordFieldRef.current,
-              opacity: [0, 1],
-              translateY: [-10, 0],
-              duration: 400,
-              easing: 'easeOutCubic'
-            });
-          } else {
-            // Hide password field with animation
-            anime({
-              targets: passwordFieldRef.current,
-              opacity: [1, 0],
-              translateY: [0, -10],
-              duration: 300,
-              easing: 'easeInCubic'
-            });
-          }
-        }
-      }
-    }
   };
 
   // Validate college email
@@ -162,24 +130,20 @@ export default function SkillLanceLogin() {
     
     return collegePatterns.some(pattern => pattern.test(email));
   };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalError('');
 
     // Basic validation
-    if (!formData.email) {
-      setLocalError('Please enter your college email');
+    if (!formData.email || !formData.password) {
+      setLocalError('Please fill in all required fields');
       return;
     }
 
     if (!isValidCollegeEmail(formData.email)) {
       setLocalError('Please use your college email (.edu, .ac.in, .edu.in)');
-      return;
-    }
-
-    if (!formData.password) {
-      setLocalError('Please enter your password');
       return;
     }
 
@@ -234,23 +198,20 @@ export default function SkillLanceLogin() {
 
   // Show current error
   const currentError = localError || error;
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
-      <FloatingElements />
+    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-white via-slate-50 to-blue-50/30">
       <div 
         ref={containerRef}
         className="w-full max-w-sm opacity-0"
       >
         
-        {/* Logo & Brand - Left aligned above card */}
-        <div className="flex items-center mb-8">
-          <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg mr-3">
-            <Sparkles className="w-5 h-5 text-white" />
+        {/* Logo & Brand - Compact */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-3 shadow-lg">
+            <Sparkles className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-2xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent" 
-              style={{ fontFamily: 'cursive' }}>
-            SkillLance
-          </h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">SkillLance</h1>
         </div>
 
         {/* Form Container */}
@@ -297,7 +258,9 @@ export default function SkillLanceLogin() {
                   />
                 </div>
               </div>
-            )}            {/* Email */}
+            )}
+
+            {/* Email */}
             <div>
               <label htmlFor="email" className="text-sm font-medium text-gray-700 block mb-1">College Email</label>
               <div className="relative">
@@ -309,61 +272,46 @@ export default function SkillLanceLogin() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="your.email@college.edu"
-                  className={`w-full pl-9 pr-10 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
-                    (() => {
-                      if (formData.email && isEmailValid) {
-                        return 'border-green-500 focus:border-green-500 focus:ring-green-500/20 bg-green-50/30';
-                      } else if (formData.email && !isEmailValid) {
-                        return 'border-orange-500 focus:border-orange-500 focus:ring-orange-500/20 bg-orange-50/30';
-                      } else {
-                        return 'border-gray-300 focus:border-blue-500 focus:ring-blue-500/20';
-                      }
-                    })()
-                  }`}
+                  className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
                   disabled={loading}
                 />
-                {formData.email && isEmailValid && (
-                  <Check className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500 w-4 h-4" />
-                )}
               </div>
               <p className="text-xs text-gray-500 flex items-center mt-1">
                 <GraduationCap className="w-3 h-3 mr-1" />
                 .edu, .ac.in, .edu.in domains accepted
               </p>
-            </div>            {/* Password - Only show when email is valid */}
-            {isEmailValid && (
-              <div 
-                ref={passwordFieldRef} 
-                className="password-field-container"
-                style={{ opacity: 90, transform: 'translateY(-10px)' }}
-              >
-                <label htmlFor="password" className="text-sm font-medium text-gray-700 block mb-1">Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Enter your password"
-                    className="w-full pl-9 pr-10 py-2.5 text-sm border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
-                    disabled={loading}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                    disabled={loading}
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label htmlFor="password" className="text-sm font-medium text-gray-700 block mb-1">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  className="w-full pl-9 pr-10 py-2.5 text-sm border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  disabled={loading}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
-            )}{/* Submit Button */}
+            </div>
+
+            {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading || !isEmailValid || !formData.password || (isSignUp && !formData.displayName?.trim())}
+              disabled={loading}
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2.5 px-4 rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
             >
               <div className="flex items-center justify-center space-x-2">
