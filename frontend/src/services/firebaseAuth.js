@@ -1,4 +1,4 @@
-// Firebase Authentication Service for CampusKarma
+// Firebase Authentication Service for SkillLance
 // Purpose: Handle all authentication operations with Firebase Auth
 
 import { 
@@ -25,6 +25,41 @@ class FirebaseAuthService {
   constructor() {
     this.auth = auth;
     this.db = db;
+    // Enhanced caching with longer timeout and size limit
+    this.profileCache = new Map();
+    this.cacheTimeout = 10 * 60 * 1000; // 10 minutes cache
+    this.maxCacheSize = 100; // Limit cache size
+    // Batch operations queue
+    this.batchQueue = [];
+    this.batchTimeout = null;
+  }
+
+  // Batch multiple Firestore operations for better performance
+  queueBatchOperation(operation) {
+    this.batchQueue.push(operation);
+    
+    if (!this.batchTimeout) {
+      this.batchTimeout = setTimeout(() => {
+        this.processBatchQueue();
+        this.batchTimeout = null;
+      }, 50); // Process batch after 50ms
+    }
+  }
+
+  async processBatchQueue() {
+    if (this.batchQueue.length === 0) return;
+    
+    // Process queued operations
+    const operations = [...this.batchQueue];
+    this.batchQueue = [];
+    
+    try {
+      await Promise.all(operations);
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('Batch operation error:', error);
+      }
+    }
   }
   // College email validation
   validateCollegeEmail(email) {
@@ -181,19 +216,38 @@ class FirebaseAuthService {
     }
   }
 
-  // Get user profile from Firestore
+  // Get user profile from Firestore (with enhanced caching)
   async getUserProfile(uid) {
     try {
+      // Check cache first
+      const cached = this.profileCache.get(uid);
+      if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
+        return cached.data;
+      }
+
+      // Clean cache if it gets too large
+      if (this.profileCache.size > this.maxCacheSize) {
+        this.profileCache.clear();
+      }
+
       const docRef = doc(this.db, 'users', uid);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
-        return docSnap.data();
+        const data = docSnap.data();
+        // Cache the result with timestamp
+        this.profileCache.set(uid, {
+          data,
+          timestamp: Date.now()
+        });
+        return data;
       } else {
         return null;
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error fetching user profile:', error);
+      }
       return null;
     }
   }
@@ -205,6 +259,8 @@ class FirebaseAuthService {
         ...updates,
         updatedAt: serverTimestamp()
       });
+      // Clear cache for this user
+      this.profileCache.delete(uid);
       return true;
     } catch (error) {
       console.error('Error updating profile:', error);

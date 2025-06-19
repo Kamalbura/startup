@@ -33,6 +33,10 @@ export default defineConfig({
     host: true, // Allow external connections
     open: true, // Auto-open browser
     cors: true,
+    // Improve dev server performance
+    hmr: {
+      overlay: false // Disable error overlay for better performance
+    },
     proxy: {
       // Proxy API requests to backend
       '/api': {
@@ -111,7 +115,14 @@ export default defineConfig({
       'framer-motion',
       'lucide-react',
       'date-fns',
+      'firebase/app',
+      'firebase/auth',
+      'firebase/firestore',
     ],
+    // Exclude heavy libraries from pre-bundling to speed up dev server start
+    exclude: [
+      'animejs'
+    ]
   },
   
   // Define global constants

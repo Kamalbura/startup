@@ -1,23 +1,35 @@
 // SkillLance Main App Component with Firebase Authentication
 // Purpose: Main app routing and Firebase auth integration
 
-import React from 'react';
+import React, { Suspense, memo } from 'react';
 import PropTypes from 'prop-types';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './index.css';
 
-// Import all pages (SRS-compliant)
+// Import essential pages (public pages - immediate load)
 import Landing from './pages/Landing';
 import About from './pages/About';
 import FirebaseLogin from './pages/FirebaseLogin';
-import Dashboard from './components/dashboard/Dashboard';
-import PostTask from './pages/PostTask';
-import Skills from './pages/Skills';
-import Disputes from './pages/Disputes';
-import ComponentTest from './pages/ComponentTest';
 
-// Placeholder for missing pages (to be implemented in later iterations)
-import { LoadingSpinner, LoadingOverlay } from './components/ui/LoadingSpinner';
+// Lazy load protected pages (better performance)
+const Dashboard = React.lazy(() => import('./components/dashboard/Dashboard'));
+const PostTask = React.lazy(() => import('./pages/PostTask'));
+const Skills = React.lazy(() => import('./pages/Skills'));
+const Disputes = React.lazy(() => import('./pages/Disputes'));
+const ComponentTest = React.lazy(() => import('./pages/ComponentTest'));
+
+// Prefetch common routes after initial load
+const prefetchRoutes = () => {
+  // Prefetch dashboard and other common routes after a short delay
+  setTimeout(() => {
+    import('./components/dashboard/Dashboard');
+    import('./pages/PostTask');
+  }, 2000);
+};
+
+// Loading components
+import { LoadingOverlay } from './components/ui/LoadingSpinner';
+import { FastLoadingOverlay } from './components/ui/FastLoadingSpinner';
 
 // Firebase Auth Context
 import { AuthProvider, useAuth, AUTH_STATES } from './context/FirebaseAuthContext';
@@ -52,13 +64,23 @@ PlaceholderPage.propTypes = {
 };
 
 function App() {
-  console.log('🚀 SkillLance App starting...');
-  console.log('🔧 React Router imported:', Router ? '✅' : '❌');
-  console.log('🔧 AuthProvider imported:', AuthProvider ? '✅' : '❌');
-  console.log('🔧 FirebaseLogin imported:', FirebaseLogin ? '✅' : '❌');
+  // Only log in development mode
+  if (import.meta.env.DEV) {
+    console.log('🚀 SkillLance App starting...');
+    console.log('🔧 React Router imported:', Router ? '✅' : '❌');
+    console.log('🔧 AuthProvider imported:', AuthProvider ? '✅' : '❌');
+    console.log('🔧 FirebaseLogin imported:', FirebaseLogin ? '✅' : '❌');
+  }
+  
+  // Start prefetching common routes after component mounts
+  React.useEffect(() => {
+    prefetchRoutes();
+  }, []);
   
   try {
-    console.log('🔧 Creating AuthProvider wrapper...');
+    if (import.meta.env.DEV) {
+      console.log('🔧 Creating AuthProvider wrapper...');
+    }
     return (
       <AuthProvider>
         <Router>
@@ -91,16 +113,21 @@ function App() {
   }
 }
 
-function AppContent() {
+const AppContent = memo(function AppContent() {
   const { status } = useAuth();
   
-  console.log('🎯 Current auth status:', status);
-  console.log('🎯 AUTH_STATES:', AUTH_STATES);
-  // Show loading while checking authentication
+  // Only log in development
+  if (import.meta.env.DEV) {
+    console.log('🎯 Current auth status:', status);
+    console.log('🎯 AUTH_STATES:', AUTH_STATES);
+  }
+    // Show loading while checking authentication
   if (status === AUTH_STATES.LOADING) {
-    console.log('🔄 Showing loading screen...');
+    if (import.meta.env.DEV) {
+      console.log('🔄 Showing loading screen...');
+    }
     return (
-      <LoadingOverlay 
+      <FastLoadingOverlay 
         isVisible={true}
         variant="dots"
         message="Checking authentication..."
@@ -112,8 +139,10 @@ function AppContent() {
   // Public routes for unauthenticated users
   if (status === AUTH_STATES.UNAUTHENTICATED || 
       status === AUTH_STATES.EMAIL_VERIFICATION_REQUIRED) {
-    console.log('🔓 Showing public routes...');
-    return (      <Routes>
+    if (import.meta.env.DEV) {
+      console.log('🔓 Showing public routes...');
+    }
+    return (<Routes>
         {/* Public Pages */}
         <Route path="/" element={<Landing />} />
         <Route path="/about" element={<About />} />
@@ -128,10 +157,11 @@ function AppContent() {
       </Routes>
     );
   }
-  
-  // Show profile completion for incomplete profiles
+    // Show profile completion for incomplete profiles
   if (status === AUTH_STATES.PROFILE_INCOMPLETE) {
-    console.log('🔥 Profile incomplete, redirecting to dashboard');
+    if (import.meta.env.DEV) {
+      console.log('🔥 Profile incomplete, redirecting to dashboard');
+    }
     return (
       <Routes>
         <Route path="/dashboard" element={<Dashboard />} />
@@ -139,49 +169,51 @@ function AppContent() {
       </Routes>
     );
   }
-  
-  // Protected routes for authenticated users
+    // Protected routes for authenticated users
   if (status === AUTH_STATES.AUTHENTICATED) {
     return (
-      <Routes>
-        {/* Authenticated user default route */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        
-        {/* Core Dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
-          {/* Help System Routes - Iterations 4-5 */}
-        <Route path="/help" element={<PlaceholderPage title="Help Feed" description="Browse all help requests" />} />
-        <Route path="/help/create" element={<PlaceholderPage title="Create Help Request" description="Post a new request" />} />
-        <Route path="/help/:id" element={<PlaceholderPage title="Help Detail" description="View help request details" />} />
-        
-        {/* Interactive Features - Iterations 5-7 */}
-        <Route path="/interaction/:id" element={<PlaceholderPage title="Live Interaction" description="Real-time collaboration" />} />
-        <Route path="/chats" element={<PlaceholderPage title="Message Inbox" description="Chat history" />} />
-        
-        {/* User Management - Iteration 6 */}
-        <Route path="/profile" element={<PlaceholderPage title="User Profile" description="Manage your profile" />} />
-        <Route path="/payment" element={<PlaceholderPage title="Payment & Rewards" description="Manage payments" />} />
-        
-        {/* Admin Panel - Iteration 9 */}
-        <Route path="/admin" element={<PlaceholderPage title="Admin Panel" description="Content moderation" />} />
-          {/* Existing Implemented Pages */}
-        <Route path="/post-task" element={<PostTask />} />
-        <Route path="/skills" element={<Skills />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/disputes" element={<Disputes />} />
-        <Route path="/component-test" element={<ComponentTest />} />
-        
-        {/* 404 Not Found */}
-        <Route path="/notfound" element={<div>404 - Page Not Found</div>} />
-        
-        {/* Redirect unknown routes to dashboard */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+      <Suspense fallback={<LoadingOverlay isVisible={true} variant="dots" message="Loading page..." />}>
+        <Routes>
+          {/* Authenticated user default route */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          
+          {/* Core Dashboard */}
+          <Route path="/dashboard" element={<Dashboard />} />
+            {/* Help System Routes - Iterations 4-5 */}
+          <Route path="/help" element={<PlaceholderPage title="Help Feed" description="Browse all help requests" />} />
+          <Route path="/help/create" element={<PlaceholderPage title="Create Help Request" description="Post a new request" />} />
+          <Route path="/help/:id" element={<PlaceholderPage title="Help Detail" description="View help request details" />} />
+          
+          {/* Interactive Features - Iterations 5-7 */}
+          <Route path="/interaction/:id" element={<PlaceholderPage title="Live Interaction" description="Real-time collaboration" />} />
+          <Route path="/chats" element={<PlaceholderPage title="Message Inbox" description="Chat history" />} />
+          
+          {/* User Management - Iteration 6 */}
+          <Route path="/profile" element={<PlaceholderPage title="User Profile" description="Manage your profile" />} />
+          <Route path="/payment" element={<PlaceholderPage title="Payment & Rewards" description="Manage payments" />} />
+          
+          {/* Admin Panel - Iteration 9 */}
+          <Route path="/admin" element={<PlaceholderPage title="Admin Panel" description="Content moderation" />} />
+            {/* Existing Implemented Pages */}
+          <Route path="/post-task" element={<PostTask />} />
+          <Route path="/skills" element={<Skills />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/disputes" element={<Disputes />} />
+          <Route path="/component-test" element={<ComponentTest />} />
+          
+          {/* 404 Not Found */}
+          <Route path="/notfound" element={<div>404 - Page Not Found</div>} />
+          
+          {/* Redirect unknown routes to dashboard */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Suspense>
     );
   }
-  
-  // Fallback for unknown auth states
-  console.log('⚠️ Unknown auth state:', status);
+    // Fallback for unknown auth states
+  if (import.meta.env.DEV) {
+    console.log('⚠️ Unknown auth state:', status);
+  }
   return (
     <div className="min-h-screen bg-red-50 flex items-center justify-center">
       <div className="text-center">
@@ -192,10 +224,9 @@ function AppContent() {
           className="mt-4 px-4 py-2 bg-red-600 text-white rounded"
         >
           Reload Page
-        </button>
-      </div>
+        </button>      </div>
     </div>
   );
-}
+});
 
 export default App;

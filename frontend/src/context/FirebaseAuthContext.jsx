@@ -1,7 +1,7 @@
 // SkillLance Firebase Authentication Context
 // Purpose: Global auth state management with Firebase Auth
 
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import firebaseAuthService from '../services/firebaseAuth';
 
@@ -116,76 +116,76 @@ const AuthDispatchContext = createContext();
 // Auth Provider Component
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
-    // Handle authentication state changes
+  
+  // Memoize the context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => state, [state]);
+  const dispatchValue = useMemo(() => dispatch, [dispatch]);
+  // Handle authentication state changes
   useEffect(() => {
-    console.log('🔥 Setting up Firebase auth listener...');
-    console.log('🔥 firebaseAuthService:', firebaseAuthService);
+    // Only log in development
+    if (import.meta.env.DEV) {
+      console.log('🔥 Setting up Firebase auth listener...');
+    }
     
     try {
       const unsubscribe = firebaseAuthService.onAuthStateChange(async (user) => {
-        console.log('🔥 Auth state changed:', user ? 'User logged in' : 'No user');
-        
-        // Set loading state immediately
-        dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
+        if (import.meta.env.DEV) {
+          console.log('🔥 Auth state changed:', user ? 'User logged in' : 'No user');
+        }
         
         if (user) {
           try {
-            console.log('🔥 Fetching user profile for:', user.uid);
-            // Get user profile from Firestore
+            // Get user profile from Firestore (with caching)
             const profile = await firebaseAuthService.getUserProfile(user.uid);
-            console.log('🔥 User profile:', profile);
-            
-            // Add a small delay to ensure loading screen is visible (200ms)
-            await new Promise(resolve => setTimeout(resolve, 200));
             
             if (!user.emailVerified) {
-              console.log('🔥 Email verification required, but allowing for development');
               // For development, allow unverified emails
               if (!profile?.displayName && !user.displayName) {
-                console.log('🔥 Profile incomplete - missing display name');
                 dispatch({
                   type: AUTH_ACTIONS.SET_PROFILE_INCOMPLETE,
                   payload: { user, profile }
                 });
               } else {
-                console.log('🔥 User authenticated successfully (dev mode)');
                 dispatch({
                   type: AUTH_ACTIONS.SET_AUTHENTICATED,
                   payload: { user, profile }
                 });
               }
             } else if (!profile?.displayName && !user.displayName) {
-              console.log('🔥 Profile incomplete - missing display name');
               dispatch({
                 type: AUTH_ACTIONS.SET_PROFILE_INCOMPLETE,
                 payload: { user, profile }
               });
             } else {
-              console.log('🔥 User authenticated successfully');
               dispatch({
                 type: AUTH_ACTIONS.SET_AUTHENTICATED,
                 payload: { user, profile }
               });
             }
           } catch (error) {
-            console.error('🔥 Error fetching user profile:', error);
+            if (import.meta.env.DEV) {
+              console.error('🔥 Error fetching user profile:', error);
+            }
             dispatch({
               type: AUTH_ACTIONS.SET_ERROR,
               payload: error.message
             });
           }
         } else {
-          console.log('🔥 User unauthenticated');
           dispatch({ type: AUTH_ACTIONS.SET_UNAUTHENTICATED });
         }
       });
 
       return () => {
-        console.log('🔥 Cleaning up auth listener');
+        if (import.meta.env.DEV) {
+          console.log('🔥 Cleaning up auth listener');
+        }
         unsubscribe();
       };
     } catch (error) {
-      console.error('🔥 Error setting up auth listener:', error);
+      if (import.meta.env.DEV) {
+        console.error('🔥 Error setting up auth listener:', error);
+      }
       dispatch({
         type: AUTH_ACTIONS.SET_ERROR,  
         payload: error.message
@@ -195,11 +195,12 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={state}>
-      <AuthDispatchContext.Provider value={dispatch}>
+    <AuthContext.Provider value={contextValue}>
+      <AuthDispatchContext.Provider value={dispatchValue}>
         {children}
       </AuthDispatchContext.Provider>
-    </AuthContext.Provider>  );
+    </AuthContext.Provider>
+  );
 }
 
 // PropTypes validation
