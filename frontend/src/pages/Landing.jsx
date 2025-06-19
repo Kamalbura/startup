@@ -134,9 +134,7 @@ const Landing = () => {
                   request anonymous help, showcase verified skills, and build trusted 
                   peer connections through secure collaboration.
                 </p>
-              </div>
-
-              {/* CTA Buttons */}
+              </div>              {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   size="lg" 
@@ -156,6 +154,18 @@ const Landing = () => {
                   <Play className="mr-2 h-5 w-5" />
                   Watch Demo
                 </Button>
+
+                {/* Development: ComponentTest Link */}
+                {import.meta.env.DEV && (
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    onClick={() => navigate('/component-test')}
+                    className="group border-orange-300 text-orange-600 hover:bg-orange-50"
+                  >
+                    🎭 Loading Animations
+                  </Button>
+                )}
               </div>
 
               {/* Trust Indicators */}

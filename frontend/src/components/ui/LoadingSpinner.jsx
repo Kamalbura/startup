@@ -1,14 +1,6 @@
 import React, { useEffect, useRef } from 'react';
+import anime from 'animejs/lib/anime.es.js';
 import { cn } from '../../lib/utils';
-
-// Lazy load anime.js only when animations are needed
-let animePromise = null;
-const loadAnime = () => {
-  if (!animePromise) {
-    animePromise = import('animejs/lib/anime.es.js').then(module => module.default);
-  }
-  return animePromise;
-};
 
 /**
  * Advanced Loading Spinner System using Anime.js
@@ -64,6 +56,7 @@ const LoadingSpinner = ({
   const currentSize = sizeConfig[size];
   const currentColor = colorConfig[color];
   const currentSpeed = speedConfig[speed];
+
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -72,38 +65,30 @@ const LoadingSpinner = ({
       animationRef.current.pause();
     }
 
-    // Lazy load anime.js and create animation
-    const initAnimation = async () => {
-      try {
-        const anime = await loadAnime();
-        if (!containerRef.current) return;
+    // Create animation based on variant
+    switch (variant) {
+      case 'dots':
+        animationRef.current = anime({
+          targets: containerRef.current.querySelectorAll('.loading-dot'),
+          scale: [0.8, 1.2, 0.8],
+          opacity: [0.5, 1, 0.5],
+          duration: currentSpeed.duration,
+          delay: anime.stagger(currentSpeed.delay),
+          loop: true,
+          easing: 'easeInOutSine'
+        });
+        break;
 
-        // Create animation based on variant with optimized settings
-        switch (variant) {
-          case 'dots':
-            animationRef.current = anime({
-              targets: containerRef.current.querySelectorAll('.loading-dot'),
-              scale: [0.8, 1.2, 0.8],
-              opacity: [0.5, 1, 0.5],
-              duration: currentSpeed.duration,
-              delay: anime.stagger(currentSpeed.delay),
-              loop: true,
-              easing: 'easeInOutSine',
-              autoplay: true
-            });
-            break;
-
-          case 'pulse':
-            animationRef.current = anime({
-              targets: containerRef.current.querySelector('.loading-pulse'),
-              scale: [1, 1.5, 1],
-              opacity: [0.7, 0.3, 0.7],
-              duration: currentSpeed.duration,
-              loop: true,
-              easing: 'easeInOutQuad',
-              autoplay: true
-            });
-            break;
+      case 'pulse':
+        animationRef.current = anime({
+          targets: containerRef.current.querySelector('.loading-pulse'),
+          scale: [1, 1.5, 1],
+          opacity: [0.7, 0.3, 0.7],
+          duration: currentSpeed.duration,
+          loop: true,
+          easing: 'easeInOutQuad'
+        });
+        break;
 
       case 'wave':
         animationRef.current = anime({
@@ -148,7 +133,9 @@ const LoadingSpinner = ({
           loop: true,
           easing: 'linear'
         });
-        break;      default:
+        break;
+
+      default:
         // Fallback to dots
         animationRef.current = anime({
           targets: containerRef.current.querySelectorAll('.loading-dot'),
@@ -158,16 +145,7 @@ const LoadingSpinner = ({
           loop: true,
           easing: 'easeInOutSine'
         });
-        break;
     }
-      } catch (error) {
-        console.error('Animation loading error:', error);
-        // Fallback to CSS animation if anime.js fails
-      }
-    };
-
-    // Initialize animation
-    initAnimation();
 
     // Cleanup function
     return () => {
@@ -251,12 +229,14 @@ const LoadingSpinner = ({
               )}
             />
           </div>
-        );      default:
+        );
+
+      default:
         return (
           <div className={cn('flex items-center justify-center gap-1', currentSize.container)}>
             {[...Array(3)].map((_, i) => (
               <div
-                key={`default-${variant}-${i}`}
+                key={`default-${i}`}
                 className={cn('loading-dot rounded-full', currentSize.dot, currentColor)}
               />
             ))}
