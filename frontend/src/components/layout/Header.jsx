@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '../../context/FirebaseAuthContext'
 import { Button } from '../ui/Button'
 import { cn } from '@/lib/utils'
 
@@ -30,9 +30,7 @@ const Header = ({ className }) => {
               </div>
               <span className="text-xl font-bold text-gray-900">SkillLance</span>
             </Link>
-          </div>
-
-          {/* Navigation - Desktop */}
+          </div>          {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link 
               to="/dashboard" 
@@ -41,16 +39,16 @@ const Header = ({ className }) => {
               Dashboard
             </Link>
             <Link 
-              to="/tasks" 
-              className="text-gray-700 hover:text-blue-600 transition-colors"
-            >
-              Browse Tasks
-            </Link>
-            <Link 
               to="/help" 
               className="text-gray-700 hover:text-blue-600 transition-colors"
             >
               Help
+            </Link>
+            <Link 
+              to="/component-test" 
+              className="text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              Components
             </Link>
           </nav>
 
@@ -123,8 +121,7 @@ const Header = ({ className }) => {
 
         {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+          <div className="md:hidden">            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
               <Link
                 to="/dashboard"
                 className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors"
@@ -133,18 +130,18 @@ const Header = ({ className }) => {
                 Dashboard
               </Link>
               <Link
-                to="/tasks"
-                className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Browse Tasks
-              </Link>
-              <Link
                 to="/help"
                 className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Help
+              </Link>
+              <Link
+                to="/component-test"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Components
               </Link>
               
               {user ? (

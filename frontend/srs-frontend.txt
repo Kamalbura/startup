@@ -1,0 +1,138 @@
+**SkillLance Frontend SRS & UI Architecture (Finalized)**
+
+---
+
+## 🚀 Project Vision
+
+SkillLance is a **campus-exclusive help & collaboration platform** where students can:
+
+* Request academic or technical help anonymously or publicly
+* Get matched with peers who can solve their issues
+* Communicate via chat, video, or collaborative boards
+* Maintain privacy, security, and campus-only identity verification
+* Enable skill-sharing via anonymous contributions
+
+---
+
+## 📄 Updated Page List (Complete UI Navigation)
+
+### Public Pages:
+
+| Route       | Name                   | Purpose                                                    |
+| ----------- | ---------------------- | ---------------------------------------------------------- |
+| `/`         | **Landing Page**       | Hero, intro, live preview of requests, CTA to login/signup |
+| `/about`    | **About Page**         | Mission, team, anonymous profile philosophy, contact       |
+| `/login`    | **Login Page**         | Email/password + OAuth (Google, GitHub, Microsoft)         |
+| `/signup`   | **Signup Page**        | New account creation                                       |
+| `/notfound` | **404 Not Found Page** | Error fallback                                             |
+
+### Protected Pages:
+
+| Route              | Name                      | Purpose                                                 |
+| ------------------ | ------------------------- | ------------------------------------------------------- |
+| `/dashboard`       | **Dashboard**             | Overview, live help requests scrolling feed, stats      |
+| `/help`            | **Help Feed**             | All posted problems + filters                           |
+| `/help/create`     | **Post Help Request**     | Create a new anonymous or public request                |
+| `/help/:id`        | **Help Detail**           | Problem description + chat panel                        |
+| `/interaction/:id` | **Live Interaction Page** | Peer-to-peer board, chat, screen share, control buttons |
+| `/chats`           | **Message Inbox**         | History of chats across helps                           |
+| `/profile`         | **User Profile**          | Basic info, password change, logout                     |
+| `/payment`         | **Payment/Reward Page**   | Integration for skill-based payments (optional)         |
+| `/admin` (opt.)    | **Admin Panel**           | Manage reports or analytics                             |
+
+---
+
+## 📊 Dashboard (Deep UI Breakdown)
+
+* **Top Navbar**: Search, notifications, avatar
+* **Sidebar Navigation**: Icons + labels for all routes
+* **Welcome Banner**: Gradient background, H2 + subtext
+* **Stats Cards Row**: Inline cards showing:
+
+  * Requests solved
+  * Pending help
+  * Karma Points
+  * Messages
+* **Live Scrolling Help Feed**: (auto-scroll & pause on hover)
+* **Floating Create Help Button**: FAB style + responsive
+
+---
+
+## 🤖 Live Interaction Page `/interaction/:id`
+
+**Layout:**
+
+* **Left Panel (60%)**:
+
+  * Live Whiteboard or code editor or task screen
+  * Top right: 4-floating buttons (Start chat, share screen, send file, leave)
+* **Right Panel (40%)**:
+
+  * Full chat panel
+  * Realtime messages + typing status
+  * Auto-scroll with animation
+* **Bottom Bar**:
+
+  * Toggle for screen sharing, webcam, mute, leave session
+
+**Features:**
+
+* Peer-to-peer room
+* Socket connection (later WebRTC or WebSocket)
+* Option for anonymous helping mode
+
+---
+
+## 💳 Payment & Reward Page `/payment`
+
+* **Use Cases**:
+
+  * Premium help
+  * Karma point conversion
+  * Campus credits
+
+* **Sections**:
+
+  * Payment history
+  * Current balance
+  * Withdrawal methods
+  * Stripe / Razorpay / Firebase Extensions integration
+
+---
+
+## 🔄 UI Strategy (Psychologically Effective Layout)
+
+### Cognitive Design Principles:
+
+* **Minimal Distraction**: Only relevant CTAs, whitespace management
+* **Color Associations**:
+
+  * Teal = Friendly
+  * Indigo = Trust/Professional
+* **Layout Balance**: Avoid card overload, use grid and breathing space
+* **Micro-interactions**: Hover effects, subtle text animation
+
+### Frontend Decisions:
+
+* Font: Poppins + Inter (16px - 24px hierarchy)
+* Responsive Margins:
+
+  * Mobile: padding-sm (8px)
+  * Desktop: padding-lg (24px)
+* Button Target: 48px min height
+* Breakpoints:
+
+  * `sm` = stacked layout
+  * `lg` = grid layout
+
+---
+
+## 📰 Final Notes
+
+* Use **Tailwind + Anime.js**
+* Animations: Feed-in, slide-up, fade
+* All avatars: **Circular color-coded placeholders**
+* Avoid profile photos for storage saving
+* Add **interactive scrolling** in Dashboard for UX delight
+
+Let me know if you’d like the Figma design plan or component stubs next.

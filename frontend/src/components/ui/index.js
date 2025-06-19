@@ -6,7 +6,14 @@ export { Button } from './Button'
 export { Input } from './Input' 
 export { Card } from './Card'
 export { Modal } from './Modal'
-export { LoadingSpinner } from './LoadingSpinner'
+
+// Loading Components (Advanced Anime.js powered)
+export { 
+  LoadingSpinner, 
+  LoadingOverlay, 
+  LoadingSkeleton, 
+  LoadingButton 
+} from './LoadingSpinner'
 
 // Avatar Components
 export { Avatar, AvatarGroup } from './Avatar'

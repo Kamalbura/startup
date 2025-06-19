@@ -1,5 +1,5 @@
 // Firebase Configuration and Client
-import { initializeApp } from 'firebase/app'
+import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
 import { getStorage, connectStorageEmulator } from 'firebase/storage'
@@ -25,9 +25,14 @@ if (missingConfig.length > 0) {
   throw new Error(`Missing Firebase configuration: ${missingConfig.join(', ')}`)
 }
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig)
-console.log('✅ Firebase initialized successfully')
+// Initialize Firebase - Check if app already exists to prevent duplicate initialization
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
+
+if (getApps().length === 1) {
+  console.log('✅ Firebase initialized successfully')
+} else {
+  console.log('✅ Firebase app already initialized, using existing instance')
+}
 
 // Initialize Firebase services
 export const auth = getAuth(app)
@@ -53,28 +58,52 @@ if (analytics) {
 }
 
 // Connect to Firebase Emulators in development
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true') {
   try {
+    // Only connect emulators if explicitly enabled and not already connected
+    const isEmulatorConnected = {
+      auth: false,
+      firestore: false,
+      storage: false
+    }
+
     // Auth Emulator
-    if (!auth._delegate._config?.emulator) {
-      connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true })
-      console.log('🔧 Connected to Auth Emulator')
+    try {
+      if (!isEmulatorConnected.auth && !auth._delegate?._config?.emulator) {
+        connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true })
+        isEmulatorConnected.auth = true
+        console.log('🔧 Connected to Auth Emulator')
+      }
+    } catch (authEmulatorError) {
+      console.log('🔧 Auth Emulator already connected or unavailable:', authEmulatorError.message)
     }
 
     // Firestore Emulator
-    if (!db._delegate._databaseId?.host?.includes('127.0.0.1')) {
-      connectFirestoreEmulator(db, '127.0.0.1', 8080)
-      console.log('🔧 Connected to Firestore Emulator')
+    try {
+      if (!isEmulatorConnected.firestore && !db._delegate?._databaseId?.host?.includes('127.0.0.1')) {
+        connectFirestoreEmulator(db, '127.0.0.1', 8080)
+        isEmulatorConnected.firestore = true
+        console.log('🔧 Connected to Firestore Emulator')
+      }
+    } catch (firestoreEmulatorError) {
+      console.log('🔧 Firestore Emulator already connected or unavailable:', firestoreEmulatorError.message)
     }
 
     // Storage Emulator
-    if (!storage._delegate._host?.includes('127.0.0.1')) {
-      connectStorageEmulator(storage, '127.0.0.1', 9199)
-      console.log('🔧 Connected to Storage Emulator')
+    try {
+      if (!isEmulatorConnected.storage && !storage._delegate?._host?.includes('127.0.0.1')) {
+        connectStorageEmulator(storage, '127.0.0.1', 9199)
+        isEmulatorConnected.storage = true
+        console.log('🔧 Connected to Storage Emulator')
+      }
+    } catch (storageEmulatorError) {
+      console.log('🔧 Storage Emulator already connected or unavailable:', storageEmulatorError.message)
     }
   } catch (error) {
-    console.warn('⚠️ Firebase Emulator connection failed:', error)
+    console.warn('⚠️ Firebase Emulator connection failed:', error.message)
   }
+} else {
+  console.log('🔥 Firebase initialized in production mode or emulators disabled')
 }
 
 // Auth persistence configuration
