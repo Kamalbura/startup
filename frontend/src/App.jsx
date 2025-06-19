@@ -33,6 +33,7 @@ import { FastLoadingOverlay } from './components/ui/FastLoadingSpinner';
 
 // Firebase Auth Context
 import { AuthProvider, useAuth, AUTH_STATES } from './context/FirebaseAuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 /**
  * Placeholder component for pages that will be implemented in later iterations
@@ -80,13 +81,14 @@ function App() {
   try {
     if (import.meta.env.DEV) {
       console.log('🔧 Creating AuthProvider wrapper...');
-    }
-    return (
-      <AuthProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </AuthProvider>
+    }    return (
+      <ThemeProvider>
+        <AuthProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </AuthProvider>
+      </ThemeProvider>
     );
   } catch (error) {
     console.error('❌ App initialization error:', error);
