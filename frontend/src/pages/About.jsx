@@ -2,10 +2,35 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 
+// Import background images
+import backgroundLight from '../assets/background.jpg';
+import backgroundDark from '../assets/background2.jpg';
+
 const About = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="container mx-auto px-4 py-16">
+    <div 
+      className="min-h-screen transition-colors duration-200"
+      style={{
+        backgroundImage: `url(${backgroundLight})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      {/* Dark mode background overlay */}
+      <div 
+        className="hidden dark:block fixed inset-0 transition-opacity duration-200"
+        style={{
+          backgroundImage: `url(${backgroundDark})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      />
+      
+      {/* Content overlay */}
+      <div className="relative z-10 bg-white/10 dark:bg-black/20 backdrop-blur-none min-h-screen">
+        <div className="container mx-auto px-4 py-16">
         {/* Header */}
         <div className="text-center mb-16">
           <Link to="/" className="inline-flex items-center text-karma-600 hover:text-karma-700 mb-8">
@@ -63,6 +88,7 @@ const About = () => {
               Join CampusKarma Today
             </Link>
           </div>
+        </div>
         </div>
       </div>
     </div>

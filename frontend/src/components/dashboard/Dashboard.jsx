@@ -112,10 +112,244 @@ const Dashboard = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+    };  }, [sidebarCollapsed]);
+
+  // Helper functions
+  const getIconBg = (color) => {
+    const colors = {
+      green: 'bg-green-100 dark:bg-green-900/20',
+      blue: 'bg-blue-100 dark:bg-blue-900/20',
+      purple: 'bg-purple-100 dark:bg-purple-900/20',
+      yellow: 'bg-yellow-100 dark:bg-yellow-900/20'
     };
-  }, [sidebarCollapsed]);  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-200">
-      <div className="flex h-screen">
+    return colors[color] || 'bg-gray-100 dark:bg-gray-800';
+  };
+
+  const getIconColor = (color) => {
+    const colors = {
+      green: 'text-green-600 dark:text-green-400',
+      blue: 'text-blue-600 dark:text-blue-400',
+      purple: 'text-purple-600 dark:text-purple-400',
+      yellow: 'text-yellow-600 dark:text-yellow-400'
+    };
+    return colors[color] || 'text-gray-600 dark:text-gray-400';
+  };
+
+  // Render functions
+  const renderErrorFallback = () => (
+    <div className="flex items-center justify-center h-full">
+      <div className="text-center">
+        <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Activity className="w-8 h-8 text-white animate-spin" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Something went wrong</h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">Don't worry, we're working on it!</p>
+        <button 
+          onClick={() => setActiveTab('overview')}
+          className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg hover:shadow-md transition-shadow"
+        >
+          Go to Dashboard
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderOverview = () => (
+    <div className="space-y-6">
+      {/* Stats Cards - Compact */}
+      <div className="grid grid-cols-4 gap-4">
+        {stats.map((stat) => (
+          <div key={stat.label} className="bg-white dark:bg-black rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">{stat.value}</p>
+              </div>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getIconBg(stat.color)}`}>
+                <stat.icon className={`w-4 h-4 ${getIconColor(stat.color)}`} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-3 gap-6">
+        {/* Left Column - Help Feed */}
+        <div className="col-span-2">
+          <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Live Help Requests</h3>
+              <button className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">View all</button>
+            </div>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              <HelpRequestFeed variant="compact" />
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column - Quick Stats */}
+        <div className="space-y-4">
+          {/* Quick Actions */}
+          <div className="bg-white dark:bg-black rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Quick Actions</h3>
+            <div className="space-y-2">
+              <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 px-3 rounded-lg text-sm font-medium hover:shadow-md transition-shadow">
+                Post Help Request
+              </button>
+              <button className="w-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 py-2 px-3 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                Browse Projects
+              </button>
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div className="bg-white dark:bg-black rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Recent Activity</h3>
+            <div className="space-y-3">
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                <div>
+                  <p className="text-sm text-gray-900 dark:text-white">Payment received</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">₹15,000 • 2 hours ago</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                <div>
+                  <p className="text-sm text-gray-900 dark:text-white">Project completed</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">React App • 1 day ago</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                <div>
+                  <p className="text-sm text-gray-900 dark:text-white">New review</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">5 stars • 2 days ago</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+  const renderProjects = () => (
+    <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Help Requests</h2>
+        <button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-md transition-shadow">
+          Post Request
+        </button>
+      </div>
+      <HelpRequestFeed variant="full" />
+    </div>
+  );
+
+  const renderHelp = () => (
+    <div className="space-y-6">
+      <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Help & Support</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* FAQ Section */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Frequently Asked Questions</h3>
+            <div className="space-y-3">
+              <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                <h4 className="font-medium text-gray-900 dark:text-white">How do I post a help request?</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Click the "+" button or go to Projects tab to create a new help request.</p>
+              </div>
+              <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                <h4 className="font-medium text-gray-900 dark:text-white">How do payments work?</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Payments are processed securely through our platform. Check the Earnings tab for details.</p>
+              </div>
+              <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                <h4 className="font-medium text-gray-900 dark:text-white">How to improve my rating?</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Provide quality help, respond quickly, and maintain good communication with clients.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Section */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Contact Support</h3>
+            <div className="space-y-3">
+              <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded-lg text-left hover:shadow-md transition-shadow">
+                <div className="flex items-center">
+                  <MessageSquare className="w-5 h-5 mr-3" />
+                  <div>
+                    <div className="font-medium">Live Chat</div>
+                    <div className="text-sm opacity-90">Get instant help</div>
+                  </div>
+                </div>
+              </button>
+              <button className="w-full border border-gray-200 dark:border-gray-700 p-4 rounded-lg text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div className="flex items-center">
+                  <MessageSquare className="w-5 h-5 mr-3 text-gray-600 dark:text-gray-400" />
+                  <div>
+                    <div className="font-medium text-gray-900 dark:text-white">Email Support</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">support@skilllance.com</div>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderTabContent = () => {
+    try {
+      switch (activeTab) {
+        case 'overview':
+          return renderOverview();
+        case 'projects':
+          return renderProjects();
+        case 'earnings':
+          return (
+            <React.Suspense fallback={<LoadingFallback componentName="Earnings" />}>
+              <Earnings />
+            </React.Suspense>
+          );
+        case 'analytics':
+          return (
+            <React.Suspense fallback={<LoadingFallback componentName="Analytics" />}>
+              <Analytics />
+            </React.Suspense>
+          );
+        case 'messages':
+          return (
+            <React.Suspense fallback={<LoadingFallback componentName="Messages" />}>
+              <Messages />
+            </React.Suspense>
+          );
+        case 'profile':
+          return (
+            <React.Suspense fallback={<LoadingFallback componentName="Profile" />}>
+              <Profile />
+            </React.Suspense>
+          );
+        case 'settings':
+          return (
+            <React.Suspense fallback={<LoadingFallback componentName="Settings" />}>
+              <Settings />
+            </React.Suspense>
+          );
+        case 'help':
+          return renderHelp();
+        default:
+          return renderOverview();
+      }
+    } catch (error) {
+      console.error('Error rendering tab content:', error);
+      return renderErrorFallback();
+    }
+  };
+
+  return (
+    <>
+      <div className="flex h-screen bg-white/10 dark:bg-black/20 backdrop-blur-sm">
 
         {/* Desktop Sidebar - Pure Black Theme */}
         <div 
@@ -285,14 +519,13 @@ const Dashboard = () => {
                 </button>
               </div>
             </div>
-          </header>
-
-          {/* Dashboard Content */}
+          </header>          {/* Dashboard Content */}
           <main className="p-4 sm:p-6 overflow-y-auto" style={{ height: 'calc(100vh - 80px)' }}>
             {renderTabContent()}
           </main>
         </div>
-      </div>      {/* Mobile Navigation Overlay */}
+      </div>
+      {/* Mobile Menu Overlay and Navigation */}
       {isMobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
           <button
@@ -354,236 +587,13 @@ const Dashboard = () => {
             </div>
           </nav>
         </div>
-      )}      {/* Floating Action Button */}
+      )}
+      {/* Floating Action Button */}
       <button className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center z-40">
         <Plus className="w-5 h-5" />
       </button>
-    </div>
+    </>
   );
-
-  function renderTabContent() {
-    try {
-      switch (activeTab) {
-        case 'overview':
-          return renderOverview();
-        case 'projects':
-          return renderProjects();
-        case 'earnings':
-          return (
-            <React.Suspense fallback={<LoadingFallback componentName="Earnings" />}>
-              <Earnings />
-            </React.Suspense>
-          );
-        case 'analytics':
-          return (
-            <React.Suspense fallback={<LoadingFallback componentName="Analytics" />}>
-              <Analytics />
-            </React.Suspense>
-          );
-        case 'messages':
-          return (
-            <React.Suspense fallback={<LoadingFallback componentName="Messages" />}>
-              <Messages />
-            </React.Suspense>
-          );
-        case 'profile':
-          return (
-            <React.Suspense fallback={<LoadingFallback componentName="Profile" />}>
-              <Profile />
-            </React.Suspense>
-          );
-        case 'settings':
-          return (
-            <React.Suspense fallback={<LoadingFallback componentName="Settings" />}>
-              <Settings />
-            </React.Suspense>
-          );
-        case 'help':
-          return renderHelp();
-        default:
-          return renderOverview();
-      }
-    } catch (error) {
-      console.error('Error rendering tab content:', error);
-      return renderErrorFallback();
-    }
-  }
-  function renderErrorFallback() {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Activity className="w-8 h-8 text-white animate-spin" />
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Something went wrong</h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Don't worry, we're working on it!</p>
-          <button 
-            onClick={() => setActiveTab('overview')}
-            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg hover:shadow-md transition-shadow"
-          >
-            Go to Dashboard
-          </button>
-        </div>
-      </div>
-    );
-  }
-  function renderHelp() {
-    return (
-      <div className="space-y-6">
-        <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Help & Support</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">            {/* FAQ Section */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Frequently Asked Questions</h3>
-              <div className="space-y-3">
-                <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                  <h4 className="font-medium text-gray-900 dark:text-white">How do I post a help request?</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Click the "+" button or go to Projects tab to create a new help request.</p>
-                </div>
-                <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                  <h4 className="font-medium text-gray-900 dark:text-white">How do payments work?</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Payments are processed securely through our platform. Check the Earnings tab for details.</p>
-                </div>
-                <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                  <h4 className="font-medium text-gray-900 dark:text-white">How to improve my rating?</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Provide quality help, respond quickly, and maintain good communication with clients.</p>
-                </div>
-              </div>
-            </div>            {/* Contact Section */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Contact Support</h3>
-              <div className="space-y-3">
-                <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded-lg text-left hover:shadow-md transition-shadow">
-                  <div className="flex items-center">
-                    <MessageSquare className="w-5 h-5 mr-3" />
-                    <div>
-                      <div className="font-medium">Live Chat</div>
-                      <div className="text-sm opacity-90">Get instant help</div>
-                    </div>
-                  </div>
-                </button>
-                <button className="w-full border border-gray-200 dark:border-gray-700 p-4 rounded-lg text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                  <div className="flex items-center">
-                    <MessageSquare className="w-5 h-5 mr-3 text-gray-600 dark:text-gray-400" />
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-white">Email Support</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">support@skilllance.com</div>
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  function renderOverview() {
-    return (
-      <div className="space-y-6">        {/* Stats Cards - Compact */}
-        <div className="grid grid-cols-4 gap-4">
-          {stats.map((stat) => (
-            <div key={stat.label} className="bg-white dark:bg-black rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-white">{stat.value}</p>
-                </div>
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getIconBg(stat.color)}`}>
-                  <stat.icon className={`w-4 h-4 ${getIconColor(stat.color)}`} />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-3 gap-6">          {/* Left Column - Help Feed */}
-          <div className="col-span-2">
-            <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Live Help Requests</h3>
-                <button className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">View all</button>
-              </div>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                <HelpRequestFeed variant="compact" />
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Quick Stats */}
-          <div className="space-y-4">            {/* Quick Actions */}
-            <div className="bg-white dark:bg-black rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Quick Actions</h3>
-              <div className="space-y-2">
-                <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 px-3 rounded-lg text-sm font-medium hover:shadow-md transition-shadow">
-                  Post Help Request
-                </button>
-                <button className="w-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 py-2 px-3 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                  Browse Projects
-                </button>
-              </div>
-            </div>            {/* Recent Activity */}
-            <div className="bg-white dark:bg-black rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Recent Activity</h3>
-              <div className="space-y-3">
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="text-sm text-gray-900 dark:text-white">Payment received</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">₹15,000 • 2 hours ago</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="text-sm text-gray-900 dark:text-white">Project completed</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">React App • 1 day ago</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="text-sm text-gray-900 dark:text-white">New review</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">5 stars • 2 days ago</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }  function renderProjects() {
-    return (
-      <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Help Requests</h2>
-          <button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-md transition-shadow">
-            Post Request
-          </button>
-        </div>
-        <HelpRequestFeed variant="full" />
-      </div>
-    );
-  }  function getIconBg(color) {
-    const colors = {
-      green: 'bg-green-100 dark:bg-green-900/20',
-      blue: 'bg-blue-100 dark:bg-blue-900/20',
-      purple: 'bg-purple-100 dark:bg-purple-900/20',
-      yellow: 'bg-yellow-100 dark:bg-yellow-900/20'
-    };
-    return colors[color] || 'bg-gray-100 dark:bg-gray-800';
-  }
-
-  function getIconColor(color) {
-    const colors = {
-      green: 'text-green-600 dark:text-green-400',
-      blue: 'text-blue-600 dark:text-blue-400',
-      purple: 'text-purple-600 dark:text-purple-400',
-      yellow: 'text-yellow-600 dark:text-yellow-400'
-    };
-    return colors[color] || 'text-gray-600 dark:text-gray-400';
-  }
 };
+
 export default Dashboard;
