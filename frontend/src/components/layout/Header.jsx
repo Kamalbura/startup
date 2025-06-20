@@ -20,20 +20,19 @@ const Header = ({ className }) => {
   }
 
   return (
-    <header className={cn("bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-colors", className)}>
+    <header className={cn("bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 transition-colors duration-200", className)}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Left Side - Navigation for larger screens */}
-          <nav className="hidden md:flex items-center space-x-8">
+          {/* Left Side - Navigation for larger screens */}          <nav className="hidden md:flex items-center space-x-8">
             <Link 
               to="/dashboard" 
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white transition-colors duration-200"
             >
               Dashboard
             </Link>
             <Link 
               to="/help" 
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white transition-colors duration-200"
             >
               Help
             </Link>
@@ -69,10 +68,9 @@ const Header = ({ className }) => {
             </div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
+            <div className="md:hidden">              <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white transition-colors duration-200"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {isMenuOpen ? (
@@ -84,36 +82,34 @@ const Header = ({ className }) => {
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Mobile Menu */}
+        </div>        {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 dark:border-gray-700">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900">
+          <div className="md:hidden border-t border-gray-200 dark:border-gray-800">
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-black">
               <Link 
                 to="/dashboard" 
-                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white transition-colors duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Dashboard
               </Link>
               <Link 
                 to="/help" 
-                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white transition-colors duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Help
               </Link>
               
               {user ? (
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
                   <div className="flex items-center px-3 py-2">
                     <img
                       src={user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email)}&background=3b82f6&color=fff`}
                       alt="Profile"
                       className="w-8 h-8 rounded-full mr-3"
                     />
-                    <span className="text-gray-700 dark:text-gray-300 text-sm">
+                    <span className="text-gray-700 dark:text-white text-sm">
                       {user.displayName || user.email}
                     </span>
                   </div>
@@ -126,8 +122,7 @@ const Header = ({ className }) => {
                     Logout
                   </Button>
                 </div>
-              ) : (
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+              ) : (                <div className="pt-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
                   <Button 
                     variant="ghost" 
                     size="sm" 
@@ -168,8 +163,7 @@ const UserMenu = ({ user, onLogout }) => (
         src={user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email)}&background=3b82f6&color=fff`}
         alt="Profile"
         className="w-8 h-8 rounded-full"
-      />
-      <span className="text-gray-700 dark:text-gray-300 text-sm">
+      />      <span className="text-gray-700 dark:text-white text-sm">
         {user.displayName || user.email}
       </span>
     </div>

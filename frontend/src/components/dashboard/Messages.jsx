@@ -147,7 +147,7 @@ const Messages = () => {
   );
 
   return (
-    <div className="h-[calc(100vh-200px)] bg-white rounded-xl shadow-sm border border-gray-100 flex">
+    <div className="h-[calc(100vh-200px)] bg-white dark:bg-black rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 flex">
       {/* Sidebar - Conversations List */}
       <div className="w-1/3 border-r border-gray-200 flex flex-col">
         {/* Header */}

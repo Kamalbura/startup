@@ -108,20 +108,19 @@ const Landing = () => {
     }
   ];
 
-  return (    <Layout showHeader={true} showFooter={true}>
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900/20 px-6 pt-16 pb-20 transition-colors">
+  return (    <Layout showHeader={true} showFooter={true}>      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-black dark:via-black dark:to-black dark:bg-black px-6 pt-16 pb-20 transition-colors duration-200">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Hero Content */}
             <div className="space-y-8">
               <div className="space-y-4">
-                <Badge variant="outline" className="inline-flex items-center gap-2 border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/20">
+                <Badge variant="outline" className="inline-flex items-center gap-2 border-blue-200 dark:border-blue-800/50 bg-blue-50/50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300">
                   <Sparkles className="h-4 w-4" />
                   Campus-Exclusive Platform
                 </Badge>
                 
-                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
+                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight transition-colors">
                   Turn Your Skills Into{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
                     Campus Karma
@@ -183,21 +182,19 @@ const Landing = () => {
                   <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">4.9/5 Rating</span>
                 </div>
               </div>
-            </div>
-
-            {/* Live Preview Panel */}
+            </div>            {/* Live Preview Panel */}
             <div className="relative">
-              <Card className="p-6 shadow-xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+              <Card className="p-6 shadow-xl border-0 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 transition-colors duration-200">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Live Help Requests</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Live Help Requests</h3>
                   <Badge variant="success" size="sm">Real-time</Badge>
                 </div>
 
                 <div className="space-y-4">
                   {liveRequests.map((request) => (
-                    <div key={request.id} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm">{request.title}</h4>
+                    <div key={request.id} className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-150">                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-medium text-gray-900 dark:text-white text-sm">{request.title}</h4>
                         <Badge 
                           variant={getBadgeVariant(request.urgency)}
                           size="sm"
@@ -220,17 +217,15 @@ const Landing = () => {
                 <Button variant="outline" size="sm" className="w-full mt-4 dark:border-gray-600 dark:hover:bg-gray-700">
                   View All Requests
                 </Button>
-              </Card>
-
-              {/* Floating Stats */}
-              <div className="absolute -bottom-6 -left-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 border dark:border-gray-700">
+              </Card>              {/* Floating Stats */}
+              <div className="absolute -bottom-6 -left-6 bg-white dark:bg-black rounded-lg shadow-lg p-4 border dark:border-gray-700">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.problemsSolved}+</div>
                   <div className="text-xs text-gray-600 dark:text-gray-400">Problems Solved</div>
                 </div>
               </div>
 
-              <div className="absolute -top-6 -right-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 border dark:border-gray-700">
+              <div className="absolute -top-6 -right-6 bg-white dark:bg-black rounded-lg shadow-lg p-4 border dark:border-gray-700">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.activeStudents}</div>
                   <div className="text-xs text-gray-600 dark:text-gray-400">Active Students</div>
@@ -240,7 +235,7 @@ const Landing = () => {
           </div>
         </div>
       </section>      {/* Features Section */}
-      <section className="py-20 px-6 bg-white dark:bg-gray-900 transition-colors">
+      <section className="py-20 px-6 bg-white dark:bg-black transition-colors duration-200">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
@@ -249,11 +244,9 @@ const Landing = () => {
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               Built specifically for college students who value privacy, trust, and academic excellence.
             </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          </div>          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature) => (
-              <Card key={feature.id} className="p-6 text-center hover:shadow-lg transition-shadow border-0 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
+              <Card key={feature.id} className="p-6 text-center hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 rounded-lg mb-4">
                   <feature.icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
@@ -264,7 +257,7 @@ const Landing = () => {
           </div>
         </div>
       </section>      {/* How It Works Section */}
-      <section className="py-20 px-6 bg-gray-50 dark:bg-gray-800 transition-colors">
+      <section className="py-20 px-6 bg-gray-50 dark:bg-black transition-colors duration-200">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
@@ -317,20 +310,18 @@ const Landing = () => {
           <p className="text-xl text-blue-100 mb-8">
             Thousands of students are already helping each other succeed. Join them today.
           </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">            <Button 
               size="lg" 
               variant="secondary"
               onClick={() => navigate('/signup')}
-              className="bg-white text-blue-600 hover:bg-gray-100"
+              className="bg-white dark:bg-black text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-900 border dark:border-gray-700"
             >
               Start Helping Today
-            </Button>
-            <Button 
+            </Button>            <Button 
               size="lg" 
               variant="outline"
               onClick={() => navigate('/login')}
-              className="border-white text-white hover:bg-white hover:text-blue-600"
+              className="border-white text-white hover:bg-white dark:hover:bg-black hover:text-blue-600 dark:hover:text-blue-400"
             >
               Sign In
             </Button>

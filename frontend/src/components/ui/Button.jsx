@@ -15,7 +15,7 @@ const Button = React.forwardRef(({
   const variantClasses = {
     default: "bg-blue-600 text-white hover:bg-blue-700",
     destructive: "bg-red-600 text-white hover:bg-red-700",
-    outline: "border border-gray-300 bg-white hover:bg-gray-50",
+    outline: "border border-gray-300 dark:border-gray-600 bg-white dark:bg-black hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-900 dark:text-white",
     secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300",
     ghost: "hover:bg-gray-100",
     link: "text-blue-600 underline-offset-4 hover:underline",

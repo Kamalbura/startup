@@ -7,10 +7,20 @@ export default {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./features/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
-    extend: {
-      colors: {
-        // SkillLance Primary Brand Colors
+    extend: {      colors: {
+        // OLED-Friendly Pure Black Theme
+        'true-black': '#000000',
+        'near-black': '#0a0a0a',
+        'dark-card': '#111111',
+        'dark-border': '#1a1a1a',
+        
+        // Card colors for shadcn/ui compatibility
+        card: 'rgb(var(--card))',
+        'card-foreground': 'rgb(var(--card-foreground))',
+        
+        // SkillLance Brand Colors - Optimized for Dark/Light
         primary: {
           50: '#EEF2FF',
           100: '#E0E7FF',
@@ -121,10 +131,6 @@ export default {
   },
   
   plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
+    require('@tailwindcss/forms'),    require('@tailwindcss/typography'),
   ],
-  
-  // Dark mode support
-  darkMode: 'class',
 }

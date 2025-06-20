@@ -70,7 +70,7 @@ const Analytics = () => {
   };
 
   const StatCard = ({ title, value, subtitle, icon: Icon, color, trend }) => (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-gray-600">{title}</p>
@@ -96,11 +96,10 @@ const Analytics = () => {
       )}
     </div>
   );
-
   const EarningsChart = () => (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">Earnings Trend</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Earnings Trend</h3>
         <div className="flex items-center space-x-2">
           <select 
             value={timeRange} 
@@ -138,10 +137,9 @@ const Analytics = () => {
       </div>
     </div>
   );
-
   const SkillBreakdown = () => (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6">Earnings by Skill</h3>
+    <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Earnings by Skill</h3>
       <div className="space-y-4">
         {analyticsData.earnings.bySkill.map((skill, index) => {
           const maxEarnings = Math.max(...analyticsData.earnings.bySkill.map(s => s.earnings));
@@ -169,10 +167,9 @@ const Analytics = () => {
       </div>
     </div>
   );
-
   const ProjectTypeChart = () => (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6">Project Types</h3>
+    <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Project Types</h3>
       <div className="space-y-3">
         {analyticsData.performance.projectTypes.map((type, index) => (
           <div key={type.type} className="flex items-center justify-between">
@@ -194,10 +191,9 @@ const Analytics = () => {
       </div>
     </div>
   );
-
   const RatingDistribution = () => (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6">Client Ratings</h3>
+    <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Client Ratings</h3>
       <div className="space-y-3">
         {analyticsData.performance.clientRatings.reverse().map((rating) => (
           <div key={rating.rating} className="flex items-center space-x-3">
@@ -297,11 +293,9 @@ const Analytics = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ProjectTypeChart />
         <RatingDistribution />
-      </div>
-
-      {/* Time Tracking Insights */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Time Tracking Insights</h3>
+      </div>      {/* Time Tracking Insights */}
+      <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Time Tracking Insights</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="text-center p-4 bg-blue-50 rounded-lg">

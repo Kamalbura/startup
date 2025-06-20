@@ -10,55 +10,16 @@ import {
 } from 'lucide-react';
 import anime from 'animejs/lib/anime.es.js';
 
-// Floating Background Elements Component
+// Floating Background Elements Component - OLED Optimized
 const FloatingElements = () => {
-  const elementsRef = useRef([]);
-  
-  useEffect(() => {
-    // Animate floating elements
-    elementsRef.current.forEach((el, index) => {
-      if (el) {
-        anime({
-          targets: el,
-          translateY: [-10, 10],
-          translateX: [-5, 5],
-          rotate: [-5, 5],
-          duration: 3000 + (index * 500),
-          easing: 'easeInOutSine',
-          direction: 'alternate',
-          loop: true,
-        });
-      }
-    });
-  }, []);
-
+  // Pure black theme - no animations for OLED battery saving
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      {/* Animated background shapes */}
-      <div 
-        ref={el => elementsRef.current[0] = el}
-        className="absolute top-20 left-10 w-16 h-16 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full backdrop-blur-sm"
-      />
-      <div 
-        ref={el => elementsRef.current[1] = el}
-        className="absolute top-40 right-20 w-12 h-12 bg-gradient-to-br from-indigo-200/20 to-pink-200/20 rounded-lg backdrop-blur-sm"
-      />
-      <div 
-        ref={el => elementsRef.current[2] = el}
-        className="absolute bottom-32 left-1/4 w-8 h-8 bg-gradient-to-br from-green-200/20 to-blue-200/20 rounded-full backdrop-blur-sm"
-      />
-      <div 
-        ref={el => elementsRef.current[3] = el}
-        className="absolute bottom-40 right-1/3 w-14 h-14 bg-gradient-to-br from-yellow-200/20 to-orange-200/20 rounded-xl backdrop-blur-sm"
-      />
-      <div 
-        ref={el => elementsRef.current[4] = el}
-        className="absolute top-1/2 left-12 w-6 h-6 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full backdrop-blur-sm"
-      />
-      <div 
-        ref={el => elementsRef.current[5] = el}
-        className="absolute top-1/3 right-12 w-10 h-10 bg-gradient-to-br from-teal-200/20 to-cyan-200/20 rounded-lg backdrop-blur-sm"
-      />
+    <div className="fixed inset-0 pointer-events-none overflow-hidden dark:hidden">
+      {/* Static geometric shapes for light mode only */}
+      <div className="absolute top-20 left-10 w-16 h-16 bg-gradient-to-br from-blue-100/10 to-purple-100/10 rounded-full" />
+      <div className="absolute top-40 right-20 w-12 h-12 bg-gradient-to-br from-indigo-100/10 to-pink-100/10 rounded-lg" />
+      <div className="absolute bottom-32 left-1/4 w-8 h-8 bg-gradient-to-br from-green-100/10 to-blue-100/10 rounded-full" />
+      <div className="absolute bottom-40 right-1/3 w-14 h-14 bg-gradient-to-br from-yellow-100/10 to-orange-100/10 rounded-xl" />
     </div>
   );
 };
@@ -234,31 +195,31 @@ export default function SkillLanceLogin() {
 
   // Show current error
   const currentError = localError || error;  return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900/20">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-white dark:bg-black transition-colors duration-200">
       <FloatingElements />
       <div 
         ref={containerRef}
         className="w-full max-w-sm opacity-0"
       >
-        
-        {/* Logo & Brand - Centered above card */}
+          {/* Logo & Brand - Centered above card */}
         <div className="flex items-center justify-center mb-8">
           <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg mr-3">
             <Sparkles className="w-6 h-6 text-white" />
-          </div>
-          <h1 className="text-3xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" 
+          </div>          <h1 className="text-3xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" 
               style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', fontWeight: 900 }}>
             SkillLance
           </h1>
-        </div>        {/* Form Container */}
-        <div className="form-container bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-8">
+        </div>
+
+        {/* Form Container - Pure Black for OLED */}
+        <div className="form-container bg-white dark:bg-black rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 p-8 transition-colors duration-200">
           
           {/* Page Title - Compact */}
           <div className="text-center mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
               {isSignUp ? 'Create Account' : 'Welcome Back'}
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               {isSignUp ? 'Join the student community' : 'Sign in to continue'}
             </p>
           </div>
@@ -304,15 +265,14 @@ export default function SkillLanceLogin() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="your.email@college.edu"
-                  className={`w-full pl-9 pr-10 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                  placeholder="your.email@college.edu"                  className={`w-full pl-9 pr-10 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 transition-all duration-150 bg-white dark:bg-dark-card text-gray-900 dark:text-white ${
                     (() => {
                       if (formData.email && isEmailValid) {
-                        return 'border-green-500 focus:border-green-500 focus:ring-green-500/20 bg-green-50/30 dark:bg-green-950/30';
+                        return 'border-green-500 focus:border-green-500 focus:ring-green-500/20 bg-green-50/30 dark:bg-green-900/10';
                       } else if (formData.email && !isEmailValid) {
-                        return 'border-orange-500 focus:border-orange-500 focus:ring-orange-500/20 bg-orange-50/30 dark:bg-orange-950/30';
+                        return 'border-orange-500 focus:border-orange-500 focus:ring-orange-500/20 bg-orange-50/30 dark:bg-orange-900/10';
                       } else {
-                        return 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20';
+                        return 'border-gray-300 dark:border-dark-border focus:border-blue-500 focus:ring-blue-500/20';
                       }
                     })()
                   }`}
@@ -343,7 +303,7 @@ export default function SkillLanceLogin() {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="Enter your password"
-                    className="w-full pl-9 pr-10 py-2.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                    className="w-full pl-9 pr-10 py-2.5 text-sm border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-white rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-150"
                     disabled={loading}
                   />
                   <button

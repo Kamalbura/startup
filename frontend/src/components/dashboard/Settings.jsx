@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/FirebaseAuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { 
   Settings as SettingsIcon, Bell, Shield, Eye, Globe, 
   Smartphone, Mail, Lock, Trash2, Download, Upload,
@@ -16,6 +17,7 @@ import { Badge } from '../ui/Badge';
  */
 const Settings = () => {
   const { user, signOut } = useAuth();
+  const { theme, setTheme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [activeSection, setActiveSection] = useState('notifications');
   const [hasChanges, setHasChanges] = useState(false);
@@ -64,20 +66,33 @@ const Settings = () => {
       lastBackup: '2024-01-10'
     }
   });
-
   useEffect(() => {
     // Load user settings from API or localStorage
     const savedSettings = localStorage.getItem('userSettings');
     if (savedSettings) {
       try {
-        setSettings(JSON.parse(savedSettings));
+        const parsed = JSON.parse(savedSettings);
+        setSettings(parsed);
       } catch (error) {
         console.error('Failed to parse saved settings:', error);
       }
     }
-  }, []);
-
+    
+    // Sync with current theme from context
+    setSettings(prev => ({
+      ...prev,
+      appearance: {
+        ...prev.appearance,
+        theme: theme || 'system'
+      }
+    }));
+  }, [theme]);
   const handleSettingChange = (section, key, value) => {
+    // Special handling for theme changes - apply immediately to theme context
+    if (section === 'appearance' && key === 'theme') {
+      setTheme(value); // This will immediately apply the theme
+    }
+    
     if (typeof key === 'string' && key.includes('.')) {
       const [subSection, subKey] = key.split('.');
       setSettings(prev => ({
@@ -189,12 +204,11 @@ const Settings = () => {
   );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-6">      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-          <p className="text-gray-600">Manage your account preferences and privacy settings</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
+          <p className="text-gray-600 dark:text-gray-400">Manage your account preferences and privacy settings</p>
         </div>
         {hasChanges && (
           <Button 
@@ -206,13 +220,11 @@ const Settings = () => {
             {loading ? 'Saving...' : 'Save Changes'}
           </Button>
         )}
-      </div>
-
-      {/* Success Message */}
+      </div>      {/* Success Message */}
       {showSuccess && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center">
-          <Check className="w-5 h-5 text-green-600 mr-3" />
-          <span className="text-green-800">Settings saved successfully!</span>
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center">
+          <Check className="w-5 h-5 text-green-600 dark:text-green-400 mr-3" />
+          <span className="text-green-800 dark:text-green-200">Settings saved successfully!</span>
         </div>
       )}
 
@@ -226,11 +238,10 @@ const Settings = () => {
                 return (
                   <button
                     key={section.id}
-                    onClick={() => setActiveSection(section.id)}
-                    className={`w-full flex items-center px-3 py-2 text-left rounded-lg transition-colors ${
+                    onClick={() => setActiveSection(section.id)}                    className={`w-full flex items-center px-3 py-2 text-left rounded-lg transition-colors ${
                       activeSection === section.id
-                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
                     }`}
                   >
                     <Icon className="w-4 h-4 mr-3" />
@@ -448,7 +459,7 @@ const Settings = () => {
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Display Preferences</h2>
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-3">Theme</label>
+                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-3">Theme</label>
                     <div className="grid grid-cols-3 gap-3">
                       {[
                         { value: 'light', label: 'Light', icon: Sun },
@@ -459,11 +470,10 @@ const Settings = () => {
                         return (
                           <button
                             key={theme.value}
-                            onClick={() => handleSettingChange('appearance', 'theme', theme.value)}
-                            className={`flex flex-col items-center p-4 border rounded-lg transition-colors ${
+                            onClick={() => handleSettingChange('appearance', 'theme', theme.value)}                            className={`flex flex-col items-center p-4 border rounded-lg transition-colors ${
                               settings.appearance.theme === theme.value
-                                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                : 'border-gray-300 hover:border-gray-400'
+                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300'
                             }`}
                           >
                             <Icon className="w-6 h-6 mb-2" />

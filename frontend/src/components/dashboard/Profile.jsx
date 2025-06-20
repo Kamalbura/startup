@@ -259,7 +259,7 @@ const Profile = () => {
                 className="w-24 h-24"
               />
               {isEditing && (
-                <button className="absolute bottom-0 right-0 bg-white border-2 border-white shadow-md rounded-full p-2 hover:bg-gray-50 transition-colors">
+                <button className="absolute bottom-0 right-0 bg-white dark:bg-black border-2 border-white dark:border-gray-700 shadow-md rounded-full p-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   <Camera className="w-4 h-4 text-gray-600" />
                 </button>
               )}

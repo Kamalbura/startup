@@ -48,36 +48,34 @@ const HelpRequestCard = ({
       'Other': User
     };
     return iconMap[subject] || User;
-  };
-  // Urgency color mapping (with dark mode support)
+  };  // Urgency color mapping (OLED-friendly pure black theme)
   const getUrgencyColor = (urgency) => {
     const colorMap = {
-      'Low': 'bg-green-100 text-green-800 border-green-200 dark:bg-green-800/20 dark:text-green-300 dark:border-green-700',
-      'Medium': 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-800/20 dark:text-yellow-300 dark:border-yellow-700', 
-      'High': 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-800/20 dark:text-orange-300 dark:border-orange-700',
-      'Urgent': 'bg-red-100 text-red-800 border-red-200 dark:bg-red-800/20 dark:text-red-300 dark:border-red-700'
+      'Low': 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700/50',
+      'Medium': 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-700/50', 
+      'High': 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700/50',
+      'Urgent': 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700/50'
     };
     return colorMap[urgency] || colorMap['Medium'];
   };
 
-  // Subject color mapping (with dark mode support)
+  // Subject color mapping (OLED-friendly pure black theme)
   const getSubjectColor = (subject) => {
     const colorMap = {
-      'Mathematics': 'bg-blue-100 text-blue-800 dark:bg-blue-800/20 dark:text-blue-300',
-      'Programming': 'bg-purple-100 text-purple-800 dark:bg-purple-800/20 dark:text-purple-300',
-      'Physics': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800/20 dark:text-yellow-300',
-      'Chemistry': 'bg-green-100 text-green-800 dark:bg-green-800/20 dark:text-green-300',
-      'Biology': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-800/20 dark:text-emerald-300',
-      'English': 'bg-pink-100 text-pink-800 dark:bg-pink-800/20 dark:text-pink-300',
-      'History': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-800/20 dark:text-indigo-300',
-      'Other': 'bg-gray-100 text-gray-800 dark:bg-gray-800/20 dark:text-gray-300'
+      'Mathematics': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      'Programming': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+      'Physics': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+      'Chemistry': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+      'Biology': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
+      'English': 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',
+      'History': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
+      'Other': 'bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-300'
     };
     return colorMap[subject] || colorMap['Other'];
   };
 
-  const SubjectIcon = getSubjectIcon(request.subject);
-  return (
-    <Card className={`hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] bg-white/90 backdrop-blur-sm border-0 shadow-md dark:bg-gray-800/90 dark:hover:shadow-xl dark:shadow-gray-900/10 ${className}`}>
+  const SubjectIcon = getSubjectIcon(request.subject);  return (
+    <Card className={`hover:shadow-lg transition-all duration-200 transform hover:scale-[1.01] bg-white border border-gray-200 shadow-sm dark:bg-true-black dark:border-dark-border dark:hover:shadow-xl dark:shadow-gray-900/20 ${className}`}>
       <div className="p-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
@@ -97,7 +95,7 @@ const HelpRequestCard = ({
                     size="sm"
                   />
                   <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{request.authorName}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{request.authorName}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">{request.authorCollege}</p>
                   </div>
                 </div>
@@ -121,10 +119,8 @@ const HelpRequestCard = ({
             <MapPin className="w-3 h-3 mr-1" />
             {request.location}
           </div>
-        </div>
-
-        {/* Title */}
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2">
+        </div>        {/* Title */}
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
           {request.title}
         </h3>
 

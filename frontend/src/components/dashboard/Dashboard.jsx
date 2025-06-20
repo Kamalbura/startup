@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth, useAuthActions } from '../../context/FirebaseAuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { 
   Home, Briefcase, MessageSquare, LogOut, 
   Plus, DollarSign, Star, Users, 
-  Activity, BarChart3, Target, Menu, X,
+  Activity, BarChart3, Target, Menu, X, ArrowRight,
   Settings as SettingsIcon
 } from 'lucide-react';
 
@@ -32,7 +33,7 @@ const LoadingFallback = ({ componentName = "content" }) => (
       <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-spin">
         <Activity className="w-6 h-6 text-white" />
       </div>
-      <p className="text-gray-600 text-sm">Loading {componentName}...</p>
+      <p className="text-gray-600 dark:text-gray-400 text-sm">Loading {componentName}...</p>
     </div>
   </div>
 );
@@ -44,10 +45,16 @@ LoadingFallback.propTypes = {
 const Dashboard = () => {
   const { user } = useAuth();
   const { signOut } = useAuthActions();
+  const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState('overview');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  // Debug theme state
+  useEffect(() => {
+    console.log('Dashboard theme state:', { isDarkMode, htmlClasses: document.documentElement.classList.toString() });
+  }, [isDarkMode]);
   
   // Sample notifications data
   const notifications = [
@@ -106,38 +113,61 @@ const Dashboard = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [sidebarCollapsed]);
+  }, [sidebarCollapsed]);  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-200">
+      <div className="flex h-screen">
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
-      <div className="flex h-screen">        {/* Desktop Sidebar */}
+        {/* Desktop Sidebar - Pure Black Theme */}
         <div 
           id="desktop-sidebar"
-          className={`hidden lg:flex ${sidebarCollapsed ? 'lg:w-16' : 'lg:w-64'} bg-white/90 backdrop-blur-xl border-r border-gray-200/50 shadow-lg transition-all duration-300`}
+          className={`hidden lg:flex ${sidebarCollapsed ? 'lg:w-16' : 'lg:w-64'} bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800 transition-all duration-200`}
         >
           {/* Logo Section */}
-          <div className="flex flex-col w-full">
-            <div className="p-6 border-b border-gray-100">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
+          <div className="flex flex-col w-full">            <div className="p-6 border-b border-gray-200 dark:border-gray-800">
+              {sidebarCollapsed ? (
+                /* Collapsed state - centered logo only */
+                <div className="flex justify-center">
                   <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                     <Activity className="w-4 h-4 text-white" />
                   </div>
-                  {!sidebarCollapsed && (
-                    <h1 className="text-xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent ml-3" 
-                        style={{ fontFamily: 'cursive' }}>
+                </div>
+              ) : (
+                /* Expanded state - logo and toggle button in separate areas */
+                <div className="grid grid-cols-[1fr_auto] gap-4 items-center">
+                  {/* Logo Section - takes available space */}
+                  <div className="flex items-center min-w-0">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Activity className="w-4 h-4 text-white" />
+                    </div>
+                    <h1 className="text-lg font-black bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent ml-3 truncate" 
+                        style={{ fontFamily: 'Poppins, system-ui, sans-serif', fontWeight: 900 }}>
                       SkillLance
                     </h1>
-                  )}
-                </div>                <button
+                  </div>
+                    {/* Toggle Button - separate column */}
+                  <div className="flex-shrink-0">
+                    <button
+                      onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                      className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-150"
+                      data-sidebar-toggle
+                    >
+                      <Menu className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {/* External toggle button for collapsed state */}
+              {sidebarCollapsed && (
+                <button
                   onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                  className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute top-6 -right-3 p-1.5 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-full shadow-sm transition-all duration-150 z-10"
                   data-sidebar-toggle
                 >
-                  <Menu className="w-4 h-4" />
+                  <ArrowRight className="w-3 h-3" />
                 </button>
-              </div>
-            </div>            {/* Navigation */}
+              )}
+            </div>{/* Navigation */}
             <nav className="p-4 space-y-2 flex-1">
               {navigation.map((item) => (
                 <button
@@ -156,10 +186,10 @@ const Dashboard = () => {
                     if (item.id === 'messages') import('./Messages');
                     if (item.id === 'earnings') import('./Earnings');
                   }}
-                  className={`w-full flex items-center ${sidebarCollapsed ? 'px-2 justify-center' : 'px-3'} py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                  className={`w-full flex items-center ${sidebarCollapsed ? 'px-2 justify-center' : 'px-3'} py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 ${
                     activeTab === item.id
                       ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
                   }`}
                   title={sidebarCollapsed ? item.name : undefined}
                 >
@@ -168,7 +198,7 @@ const Dashboard = () => {
                     <>
                       <span className="flex-1 text-left ml-3">{item.name}</span>
                       {item.badge && (
-                        <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full">{item.badge}</span>
+                        <span className="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 text-xs px-2 py-0.5 rounded-full">{item.badge}</span>
                       )}
                     </>
                   )}
@@ -180,23 +210,21 @@ const Dashboard = () => {
             </nav>
 
             {/* User Section */}
-            <div className="p-4 border-t border-gray-100">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-800">
               <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
                 <div className="flex items-center">
                   <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
                     {user?.displayName?.[0] || 'S'}
-                  </div>
-                  {!sidebarCollapsed && (
+                  </div>                  {!sidebarCollapsed && (
                     <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-700">{user?.displayName || 'Student'}</p>
-                      <p className="text-xs text-gray-500">Expert Level</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{user?.displayName || 'Student'}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Expert Level</p>
                     </div>
                   )}
-                </div>
-                {!sidebarCollapsed && (
+                </div>                {!sidebarCollapsed && (
                   <button
                     onClick={handleSignOut}
-                    className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
                   </button>
@@ -204,18 +232,16 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Main Content */}
+        </div>        {/* Main Content */}
         <div className="flex-1 overflow-hidden">
           {/* Mobile Header */}
-          <header className="bg-white/80 backdrop-blur-xl border-b border-gray-200/50 px-4 sm:px-6 py-4">
+          <header className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 sm:px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 {/* Mobile Menu Button */}
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="lg:hidden p-2 text-gray-400 hover:text-gray-600 transition-colors mr-3"
+                  className="lg:hidden p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors mr-3"
                 >
                   {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                 </button>
@@ -225,18 +251,17 @@ const Dashboard = () => {
                   <div className="w-6 h-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-2">
                     <Activity className="w-3 h-3 text-white" />
                   </div>
-                  <h1 className="text-lg font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent" 
-                      style={{ fontFamily: 'cursive' }}>
+                  <h1 className="text-lg font-black bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent" 
+                      style={{ fontFamily: 'Poppins, system-ui, sans-serif', fontWeight: 900 }}>
                     SkillLance
                   </h1>
                 </div>
 
-                {/* Desktop Title */}
-                <div className="hidden lg:block">
-                  <h2 className="text-xl font-semibold text-gray-900">
+                {/* Desktop Title */}                <div className="hidden lg:block">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                     Good morning, {user?.displayName || 'Student'}!
                   </h2>
-                  <p className="text-sm text-gray-600">Here's your dashboard overview</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Here's your dashboard overview</p>
                 </div>
               </div>              <div className="flex items-center space-x-3">
                 <NotificationSystem 
@@ -383,7 +408,6 @@ const Dashboard = () => {
       return renderErrorFallback();
     }
   }
-
   function renderErrorFallback() {
     return (
       <div className="flex items-center justify-center h-full">
@@ -391,8 +415,8 @@ const Dashboard = () => {
           <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <Activity className="w-8 h-8 text-white animate-spin" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Something went wrong</h3>
-          <p className="text-gray-600 mb-4">Don't worry, we're working on it!</p>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Something went wrong</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Don't worry, we're working on it!</p>
           <button 
             onClick={() => setActiveTab('overview')}
             className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg hover:shadow-md transition-shadow"
@@ -403,35 +427,31 @@ const Dashboard = () => {
       </div>
     );
   }
-
   function renderHelp() {
     return (
       <div className="space-y-6">
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Help & Support</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* FAQ Section */}
+        <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Help & Support</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">            {/* FAQ Section */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Frequently Asked Questions</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Frequently Asked Questions</h3>
               <div className="space-y-3">
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <h4 className="font-medium text-gray-900">How do I post a help request?</h4>
-                  <p className="text-sm text-gray-600 mt-1">Click the "+" button or go to Projects tab to create a new help request.</p>
+                <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                  <h4 className="font-medium text-gray-900 dark:text-white">How do I post a help request?</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Click the "+" button or go to Projects tab to create a new help request.</p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <h4 className="font-medium text-gray-900">How do payments work?</h4>
-                  <p className="text-sm text-gray-600 mt-1">Payments are processed securely through our platform. Check the Earnings tab for details.</p>
+                <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                  <h4 className="font-medium text-gray-900 dark:text-white">How do payments work?</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Payments are processed securely through our platform. Check the Earnings tab for details.</p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <h4 className="font-medium text-gray-900">How to improve my rating?</h4>
-                  <p className="text-sm text-gray-600 mt-1">Provide quality help, respond quickly, and maintain good communication with clients.</p>
+                <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                  <h4 className="font-medium text-gray-900 dark:text-white">How to improve my rating?</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Provide quality help, respond quickly, and maintain good communication with clients.</p>
                 </div>
               </div>
-            </div>
-
-            {/* Contact Section */}
+            </div>            {/* Contact Section */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Contact Support</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Contact Support</h3>
               <div className="space-y-3">
                 <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded-lg text-left hover:shadow-md transition-shadow">
                   <div className="flex items-center">
@@ -442,12 +462,12 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </button>
-                <button className="w-full border border-gray-200 p-4 rounded-lg text-left hover:bg-gray-50 transition-colors">
+                <button className="w-full border border-gray-200 dark:border-gray-700 p-4 rounded-lg text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   <div className="flex items-center">
-                    <MessageSquare className="w-5 h-5 mr-3 text-gray-600" />
+                    <MessageSquare className="w-5 h-5 mr-3 text-gray-600 dark:text-gray-400" />
                     <div>
-                      <div className="font-medium text-gray-900">Email Support</div>
-                      <div className="text-sm text-gray-600">support@skilllance.com</div>
+                      <div className="font-medium text-gray-900 dark:text-white">Email Support</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">support@skilllance.com</div>
                     </div>
                   </div>
                 </button>
@@ -458,18 +478,16 @@ const Dashboard = () => {
       </div>
     );
   }
-
   function renderOverview() {
     return (
-      <div className="space-y-6">
-        {/* Stats Cards - Compact */}
+      <div className="space-y-6">        {/* Stats Cards - Compact */}
         <div className="grid grid-cols-4 gap-4">
           {stats.map((stat) => (
-            <div key={stat.label} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div key={stat.label} className="bg-white dark:bg-black rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{stat.label}</p>
-                  <p className="text-lg font-semibold text-gray-900">{stat.value}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-white">{stat.value}</p>
                 </div>
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getIconBg(stat.color)}`}>
                   <stat.icon className={`w-4 h-4 ${getIconColor(stat.color)}`} />
@@ -480,13 +498,12 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-3 gap-6">
-          {/* Left Column - Help Feed */}
+        <div className="grid grid-cols-3 gap-6">          {/* Left Column - Help Feed */}
           <div className="col-span-2">
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Live Help Requests</h3>
-                <button className="text-sm text-blue-600 hover:text-blue-700">View all</button>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Live Help Requests</h3>
+                <button className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">View all</button>
               </div>
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 <HelpRequestFeed variant="compact" />
@@ -495,43 +512,40 @@ const Dashboard = () => {
           </div>
 
           {/* Right Column - Quick Stats */}
-          <div className="space-y-4">
-            {/* Quick Actions */}
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Quick Actions</h3>
+          <div className="space-y-4">            {/* Quick Actions */}
+            <div className="bg-white dark:bg-black rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Quick Actions</h3>
               <div className="space-y-2">
                 <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 px-3 rounded-lg text-sm font-medium hover:shadow-md transition-shadow">
                   Post Help Request
                 </button>
-                <button className="w-full border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+                <button className="w-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 py-2 px-3 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   Browse Projects
                 </button>
               </div>
-            </div>
-
-            {/* Recent Activity */}
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Recent Activity</h3>
+            </div>            {/* Recent Activity */}
+            <div className="bg-white dark:bg-black rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Recent Activity</h3>
               <div className="space-y-3">
                 <div className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                   <div>
-                    <p className="text-sm text-gray-900">Payment received</p>
-                    <p className="text-xs text-gray-500">₹15,000 • 2 hours ago</p>
+                    <p className="text-sm text-gray-900 dark:text-white">Payment received</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">₹15,000 • 2 hours ago</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                   <div>
-                    <p className="text-sm text-gray-900">Project completed</p>
-                    <p className="text-xs text-gray-500">React App • 1 day ago</p>
+                    <p className="text-sm text-gray-900 dark:text-white">Project completed</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">React App • 1 day ago</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
                   <div>
-                    <p className="text-sm text-gray-900">New review</p>
-                    <p className="text-xs text-gray-500">5 stars • 2 days ago</p>
+                    <p className="text-sm text-gray-900 dark:text-white">New review</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">5 stars • 2 days ago</p>
                   </div>
                 </div>
               </div>
@@ -540,13 +554,11 @@ const Dashboard = () => {
         </div>
       </div>
     );
-  }
-
-  function renderProjects() {
+  }  function renderProjects() {
     return (
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Help Requests</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Help Requests</h2>
           <button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-md transition-shadow">
             Post Request
           </button>
@@ -554,25 +566,24 @@ const Dashboard = () => {
         <HelpRequestFeed variant="full" />
       </div>
     );
-  }
-  function getIconBg(color) {
+  }  function getIconBg(color) {
     const colors = {
-      green: 'bg-green-100',
-      blue: 'bg-blue-100',
-      purple: 'bg-purple-100',
-      yellow: 'bg-yellow-100'
+      green: 'bg-green-100 dark:bg-green-900/20',
+      blue: 'bg-blue-100 dark:bg-blue-900/20',
+      purple: 'bg-purple-100 dark:bg-purple-900/20',
+      yellow: 'bg-yellow-100 dark:bg-yellow-900/20'
     };
-    return colors[color] || 'bg-gray-100';
+    return colors[color] || 'bg-gray-100 dark:bg-gray-800';
   }
 
   function getIconColor(color) {
     const colors = {
-      green: 'text-green-600',
-      blue: 'text-blue-600',
-      purple: 'text-purple-600',
-      yellow: 'text-yellow-600'
+      green: 'text-green-600 dark:text-green-400',
+      blue: 'text-blue-600 dark:text-blue-400',
+      purple: 'text-purple-600 dark:text-purple-400',
+      yellow: 'text-yellow-600 dark:text-yellow-400'
     };
-    return colors[color] || 'text-gray-600';
+    return colors[color] || 'text-gray-600 dark:text-gray-400';
   }
 };
 export default Dashboard;

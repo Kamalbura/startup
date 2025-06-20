@@ -53,14 +53,13 @@ const Earnings = () => {
     setIsLoading(true);
     setTimeout(() => setIsLoading(false), 1000);
   };
-
   const StatCard = ({ title, value, subtitle, icon: Icon, color, trend }) => (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 transform hover:scale-105">
+    <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-all duration-300 transform hover:scale-105">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
-          {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{title}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{value}</p>
+          {subtitle && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{subtitle}</p>}
         </div>
         <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${color}`}>
           <Icon className="w-6 h-6 text-white" />
@@ -81,11 +80,10 @@ const Earnings = () => {
       )}
     </div>
   );
-
   const EarningsChart = () => (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">Monthly Earnings Trend</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Monthly Earnings Trend</h3>
         <div className="flex items-center space-x-3">
           <select 
             value={timeRange} 
@@ -127,10 +125,9 @@ const Earnings = () => {
       </div>
     </div>
   );
-
   const SkillEarnings = () => (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6">Earnings by Skill</h3>
+    <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Earnings by Skill</h3>
       <div className="space-y-4">
         {earningsData.skills.map((skill, index) => {
           const maxEarnings = Math.max(...earningsData.skills.map(s => s.earnings));
@@ -167,11 +164,10 @@ const Earnings = () => {
       </div>
     </div>
   );
-
   const TransactionHistory = () => (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-white dark:bg-black rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Transactions</h3>
         <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
           View All
         </button>
