@@ -29,18 +29,17 @@ const NotificationSystem = ({
 
   // Calculate unread count
   const unreadCount = displayNotifications.filter(n => n.unread).length;
-
   // Notification type icons and colors
   const getNotificationIcon = (type) => {
     switch (type) {
       case 'payment':
-        return <DollarSign className="w-4 h-4 text-green-600" />;
+        return <DollarSign className="w-4 h-4 text-green-600 dark:text-green-400" />;
       case 'review':
-        return <Star className="w-4 h-4 text-yellow-600" />;
+        return <Star className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />;
       case 'message':
-        return <MessageSquare className="w-4 h-4 text-blue-600" />;
+        return <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />;
       default:
-        return <AlertCircle className="w-4 h-4 text-gray-600" />;
+        return <AlertCircle className="w-4 h-4 text-gray-600 dark:text-gray-400" />;
     }
   };
 
@@ -72,10 +71,9 @@ const NotificationSystem = ({
 
   return (
     <div className="relative">
-      {/* Notification Bell Button */}
-      <button
+      {/* Notification Bell Button */}      <button
         onClick={handleToggleDropdown}
-        className="p-2 text-gray-400 hover:text-gray-600 transition-colors relative"
+        className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors relative"
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
@@ -84,54 +82,51 @@ const NotificationSystem = ({
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
-      </button>
-
-      {/* Notifications Dropdown */}
+      </button>      {/* Notifications Dropdown */}
       {isDropdownOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-          <div className="p-4 border-b border-gray-200">
+        <div className="absolute right-0 mt-2 w-80 bg-white/75 dark:bg-black/75 backdrop-blur-md rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Notifications</h3>
               <button
                 onClick={() => setDropdownOpen(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          <div className="max-h-64 overflow-y-auto">
-            {displayNotifications.length === 0 ? (
-              <div className="p-6 text-center text-gray-500">
-                <Bell className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+          <div className="max-h-64 overflow-y-auto">            {displayNotifications.length === 0 ? (
+              <div className="p-6 text-center text-gray-500 dark:text-gray-400">
+                <Bell className="w-8 h-8 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
                 <p>No notifications yet</p>
               </div>
             ) : (
               displayNotifications.map((notification) => (
                 <button
                   key={notification.id}
-                  className={`w-full p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors text-left ${
-                    notification.unread ? 'bg-blue-50' : ''
+                  className={`w-full p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-left ${
+                    notification.unread ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                   }`}
                   onClick={() => markAsRead(notification.id)}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
                       {getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                           {notification.title || 'Notification'}
                         </p>
                         {notification.unread && (
                           <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{notification.message}</p>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
                           {notification.time}
                         </span>
                       </div>
@@ -140,11 +135,9 @@ const NotificationSystem = ({
                 </button>
               ))
             )}
-          </div>
-
-          {displayNotifications.length > 0 && (
-            <div className="p-3 border-t border-gray-200">
-              <button className="w-full text-center text-sm text-blue-600 hover:text-blue-700 font-medium">
+          </div>          {displayNotifications.length > 0 && (
+            <div className="p-3 border-t border-gray-200 dark:border-gray-700">
+              <button className="w-full text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
                 View all notifications
               </button>
             </div>
