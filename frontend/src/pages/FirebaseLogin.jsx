@@ -210,7 +210,7 @@ export default function SkillLanceLogin() {
     >
       {/* Dark mode background overlay */}
       <div 
-        className="hidden dark:block fixed inset-0 transition-opacity duration-200"
+        className="hidden dark:block fixed inset-0 transition-opacity duration-200 z-0"
         style={{
           backgroundImage: `url(${backgroundDark})`,
           backgroundSize: 'cover',
@@ -218,9 +218,6 @@ export default function SkillLanceLogin() {
           backgroundRepeat: 'no-repeat'
         }}
       />
-      
-      {/* Completely transparent overlay - no background, no blur */}
-      <div className="absolute inset-0 bg-transparent transition-all duration-300" />
       
       <FloatingElements />
       

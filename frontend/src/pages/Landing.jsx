@@ -10,6 +10,10 @@ import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import { Layout } from '../components/layout';
 
+// Import background images
+import backgroundLight from '../assets/background.jpg';
+import backgroundDark from '../assets/background2.jpg';
+
 /**
  * SkillLance Landing Page
  * 
@@ -108,8 +112,31 @@ const Landing = () => {
     }
   ];
 
-  return (    <Layout showHeader={true} showFooter={true}>      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-black dark:via-black dark:to-black dark:bg-black px-6 pt-16 pb-20 transition-colors duration-200">
+  return (
+    <div 
+      className="min-h-screen transition-colors duration-200"
+      style={{
+        backgroundImage: `url(${backgroundLight})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      {/* Dark mode background overlay */}
+      <div 
+        className="hidden dark:block fixed inset-0 transition-opacity duration-200"
+        style={{
+          backgroundImage: `url(${backgroundDark})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      />
+      
+      {/* Content overlay */}
+      <div className="relative z-10">
+        <Layout showHeader={true} showFooter={true}>      {/* Hero Section */}
+      <section className="relative bg-white/10 dark:bg-black/20 backdrop-blur-none px-6 pt-16 pb-20 transition-colors duration-200">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Hero Content */}
@@ -184,7 +211,7 @@ const Landing = () => {
               </div>
             </div>            {/* Live Preview Panel */}
             <div className="relative">
-              <Card className="p-6 shadow-xl border-0 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 transition-colors duration-200">
+              <Card className="p-6 shadow-xl border-0 bg-white/20 dark:bg-black/30 backdrop-blur-sm border border-gray-200/30 dark:border-gray-800/30 transition-colors duration-200">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                   <h3 className="font-semibold text-gray-900 dark:text-white">Live Help Requests</h3>
@@ -193,7 +220,7 @@ const Landing = () => {
 
                 <div className="space-y-4">
                   {liveRequests.map((request) => (
-                    <div key={request.id} className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-150">                      <div className="flex items-start justify-between mb-2">
+                    <div key={request.id} className="p-4 bg-gray-50/30 dark:bg-gray-900/30 backdrop-blur-sm rounded-lg hover:bg-gray-100/40 dark:hover:bg-gray-800/40 transition-colors duration-150">                      <div className="flex items-start justify-between mb-2">
                         <h4 className="font-medium text-gray-900 dark:text-white text-sm">{request.title}</h4>
                         <Badge 
                           variant={getBadgeVariant(request.urgency)}
@@ -218,14 +245,14 @@ const Landing = () => {
                   View All Requests
                 </Button>
               </Card>              {/* Floating Stats */}
-              <div className="absolute -bottom-6 -left-6 bg-white dark:bg-black rounded-lg shadow-lg p-4 border dark:border-gray-700">
+              <div className="absolute -bottom-6 -left-6 bg-white/20 dark:bg-black/30 backdrop-blur-sm rounded-lg shadow-lg p-4 border border-gray-200/30 dark:border-gray-700/30">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.problemsSolved}+</div>
                   <div className="text-xs text-gray-600 dark:text-gray-400">Problems Solved</div>
                 </div>
               </div>
 
-              <div className="absolute -top-6 -right-6 bg-white dark:bg-black rounded-lg shadow-lg p-4 border dark:border-gray-700">
+              <div className="absolute -top-6 -right-6 bg-white/20 dark:bg-black/30 backdrop-blur-sm rounded-lg shadow-lg p-4 border border-gray-200/30 dark:border-gray-700/30">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.activeStudents}</div>
                   <div className="text-xs text-gray-600 dark:text-gray-400">Active Students</div>
@@ -246,7 +273,7 @@ const Landing = () => {
             </p>
           </div>          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature) => (
-              <Card key={feature.id} className="p-6 text-center hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
+              <Card key={feature.id} className="p-6 text-center hover:shadow-lg transition-shadow border border-gray-200/30 dark:border-gray-800/30 bg-white/20 dark:bg-black/30 backdrop-blur-sm">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 rounded-lg mb-4">
                   <feature.icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
@@ -257,7 +284,7 @@ const Landing = () => {
           </div>
         </div>
       </section>      {/* How It Works Section */}
-      <section className="py-20 px-6 bg-gray-50 dark:bg-black transition-colors duration-200">
+      <section className="py-20 px-6 bg-gray-50/20 dark:bg-black/20 backdrop-blur-none transition-colors duration-200">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
@@ -325,10 +352,11 @@ const Landing = () => {
             >
               Sign In
             </Button>
-          </div>
-        </div>
+          </div>        </div>
       </section>
-    </Layout>
+        </Layout>
+      </div>
+    </div>
   );
 };
 
