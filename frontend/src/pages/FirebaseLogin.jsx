@@ -200,7 +200,7 @@ export default function SkillLanceLogin() {
   // Show current error
   const currentError = localError || error;  return (
     <div 
-      className="min-h-screen flex items-center justify-center p-6 transition-colors duration-200"
+      className="min-h-screen transition-colors duration-200"
       style={{
         backgroundImage: `url(${backgroundLight})`,
         backgroundSize: 'cover',
@@ -217,24 +217,31 @@ export default function SkillLanceLogin() {
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
         }}
-      />      {/* Completely transparent overlay - no background, no blur */}
+      />
+      
+      {/* Completely transparent overlay - no background, no blur */}
       <div className="absolute inset-0 bg-transparent transition-all duration-300" />
       
       <FloatingElements />
-      <div
-        ref={containerRef}
-        className="relative z-10 w-full max-w-sm opacity-0"
-      >
-          {/* Logo & Brand - Centered above card */}
-        <div className="flex items-center justify-center mb-8">
-          <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg mr-3">
-            <Sparkles className="w-6 h-6 text-white" />
-          </div>          <h1 className="text-3xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" 
-              style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', fontWeight: 900 }}>
-            SkillLance
-          </h1>
-        </div>        {/* Form Container - Pure Black for OLED with proper transparency */}
-        <div className="form-container bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-800/50 p-8 transition-all duration-300">
+      
+      {/* SkillLance logo - Fixed at top-left */}
+      <div className="absolute top-6 left-6 z-20 flex items-center">
+        <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg mr-2">
+          <Sparkles className="w-5 h-5 text-white" />
+        </div>
+        <h1 className="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" 
+            style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', fontWeight: 900 }}>
+          SkillLance
+        </h1>
+      </div>
+        {/* Right-aligned form container */}
+      <div className="min-h-screen flex items-center justify-end p-6 pr-12">
+        <div
+          ref={containerRef}
+          className="relative z-10 w-full max-w-sm opacity-0"
+        >
+        {/* Form Container - Right aligned with transparency and sharp edges */}
+        <div className="form-container bg-white/45 dark:bg-black/80 backdrop-blur-md rounded-lg shadow-xl border border-gray-200/60 dark:border-gray-800/60 p-8 transition-all duration-300">
           
           {/* Page Title - Compact */}
           <div className="text-center mb-6">
@@ -426,15 +433,14 @@ export default function SkillLanceLogin() {
               </button>
             </div>
           )}
-        </div>
-
-        {/* Footer */}
+        </div>        {/* Footer */}
         <div className="mt-6 text-center">
           <div className="text-xs text-gray-400 dark:text-gray-500 space-x-4">
             <button type="button" className="hover:text-gray-600 dark:hover:text-gray-400 transition-colors">Privacy</button>
             <span>•</span>
             <button type="button" className="hover:text-gray-600 dark:hover:text-gray-400 transition-colors">Terms</button>
           </div>
+        </div>
         </div>
       </div>
     </div>
