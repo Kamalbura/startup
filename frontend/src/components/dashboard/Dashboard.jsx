@@ -349,7 +349,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="flex h-screen bg-white/10 dark:bg-black/20 backdrop-blur-sm">
+      <div className="flex h-screen bg-white/10 dark:bg-black/10">
 
         {/* Desktop Sidebar - Pure Black Theme */}
         <div 

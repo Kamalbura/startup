@@ -10,9 +10,8 @@ import {
 } from 'lucide-react';
 import anime from 'animejs/lib/anime.es.js';
 
-// Import background images
-import backgroundLight from '../assets/background.jpg';
-import backgroundDark from '../assets/background2.jpg';
+// Import background images - Using background2.jpg as base image for both themes
+import backgroundBase from '../assets/background2.jpg';
 
 // Floating Background Elements Component - OLED Optimized
 const FloatingElements = () => {
@@ -202,17 +201,16 @@ export default function SkillLanceLogin() {
     <div 
       className="min-h-screen transition-colors duration-200"
       style={{
-        backgroundImage: `url(${backgroundLight})`,
+        backgroundImage: `url(${backgroundBase})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}
-    >
-      {/* Dark mode background overlay */}
+    >      {/* Dark mode background overlay - Same image for consistency */}
       <div 
         className="hidden dark:block fixed inset-0 transition-opacity duration-200 z-0"
         style={{
-          backgroundImage: `url(${backgroundDark})`,
+          backgroundImage: `url(${backgroundBase})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'

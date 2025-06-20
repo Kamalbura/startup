@@ -10,9 +10,8 @@ import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import { Layout } from '../components/layout';
 
-// Import background images
-import backgroundLight from '../assets/background.jpg';
-import backgroundDark from '../assets/background2.jpg';
+// Import background images - Using background2.jpg as base image for both themes
+import backgroundBase from '../assets/background2.jpg';
 
 /**
  * SkillLance Landing Page
@@ -111,30 +110,20 @@ const Landing = () => {
       description: "Chat, video call, or work together on interactive whiteboards."
     }
   ];
-
   return (
-    <div 
-      className="min-h-screen transition-colors duration-200"
-      style={{
-        backgroundImage: `url(${backgroundLight})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
-      {/* Dark mode background overlay */}
+    <>      {/* Static Background Image - Same for both light and dark themes */}
       <div 
-        className="hidden dark:block fixed inset-0 transition-opacity duration-200"
+        className="fixed inset-0 transition-opacity duration-200 z-0"
         style={{
-          backgroundImage: `url(${backgroundDark})`,
+          backgroundImage: `url(${backgroundBase})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
         }}
       />
       
-      {/* Content overlay */}
-      <div className="relative z-10">
+      {/* Scrollable Content Overlay */}
+      <div className="relative z-10 min-h-screen">
         <Layout showHeader={true} showFooter={true}>      {/* Hero Section */}
       <section className="relative bg-white/10 dark:bg-black/20 backdrop-blur-none px-6 pt-16 pb-20 transition-colors duration-200">
         <div className="max-w-7xl mx-auto">
@@ -353,10 +342,9 @@ const Landing = () => {
               Sign In
             </Button>
           </div>        </div>
-      </section>
-        </Layout>
+      </section>        </Layout>
       </div>
-    </div>
+    </>
   );
 };
 
